@@ -1,6 +1,15 @@
+import Link from "next/link"
+
 const Homepage = () => {
   return (
-    <div className=''>Homepage</div>
+    <>
+    <div className=''><Link href="/">Homepage</Link></div>
+    <div className=''><Link href="/student">Student</Link></div>
+    <div className=''><Link href="/teacher">Teacher</Link></div>
+    <div className=''><Link href="/admin ">Admin</Link></div>
+    <div className=''><Link href="/parent ">Parent</Link></div>
+    </>
+
   )
 }
 
