@@ -19,6 +19,7 @@
  [X] student dashboard page
      - react-big-calendar
      - moment
+     - customize calendar
 
 ## Dependencies
 - react-big-calendar
