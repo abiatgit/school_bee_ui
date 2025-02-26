@@ -12,7 +12,13 @@ const Homepage = () => {
     <div className=''><Link href="/list/teachers">TeachersList</Link></div>
     <hr/>
     <div className=''><Link href="/list/students">StudentsList</Link></div>
+    <div className=''><Link href="/list/parents">ParentsList</Link></div>
+    <div className=''><Link href="/list/subjects">SubjectsList</Link></div>
+    <div className=''><Link href="/list/classes">ClassesList</Link></div>
+    <div className=''><Link href="/list/lessons">LessonsList</Link></div>
     </>
+  
+   
 
   )
 }

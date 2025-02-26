@@ -74,8 +74,8 @@ const StudentsListPage = () => {
         </td>
         <td className="hidden md:table-cell">{item.studentId}</td>
         <td className="hidden md:table-cell">{item.grade}</td>
-        <td className="hidden md:table-cell">{item.phone}</td>
-        <td className="hidden md:table-cell">{item.address}</td>
+        <td className="hidden lg:table-cell">{item.phone}</td>
+        <td className="hidden lg:table-cell">{item.address}</td>
         <td >
           <div className="flex items-center gap-2">
             <Link href={`/list/teachers/${item.id}`} className="text-blue-500">
