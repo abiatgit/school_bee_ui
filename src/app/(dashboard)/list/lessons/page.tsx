@@ -22,12 +22,12 @@ const columns = [
   {
     headers: "Class",
     accessor: "class",
-    className: "hidden md:table-cell",
+    className: "hidden sm:table-cell",
   },
   {
     headers: "Teacher",
     accessor: "teacher",
-    className: "hidden md:table-cell",
+    className: "",
   },
   {
     headers: "Actions",
@@ -47,7 +47,7 @@ const LessonsListPage = () => {
             <h3 className="text-sm font-semibold">{item.subject}</h3>
           </div>
         </td>
-        <td className="hidden md:table-cell">{item.class}</td>
+        <td className="">{item.class}</td>
  
 
         <td className="hidden md:table-cell">{item.teacher}</td>
@@ -55,7 +55,7 @@ const LessonsListPage = () => {
           <div className="flex items-center gap-2">
             <Link href={`/list/teachers/${item.id}`} className="text-blue-500">
               <button className="p-3 rounded-full flex items-center justify-center bg-abiSky w-7,h-7">
-                <Image src="/view.png" alt="edit" width={16} height={16} />
+                <Image src="/edit.png" alt="edit" width={16} height={16} />
               </button>
             </Link>
             {role === "admin" && (
