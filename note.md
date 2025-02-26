@@ -14,14 +14,22 @@
 ## Dependencies 
 - recharts
 - react-calendar
+- react-big-calendar
+- moment
 
 ## 25-02-2025
  [X] student dashboard page
      - react-big-calendar
      - moment
      - customize calendar
-
+[X] teacher dashboard page
+[X] parent dashboard page
+[X] list teachers page
 ## Dependencies
 - react-big-calendar
 - moment
+
+## 26-02-2025
+[X] table component
+[X] teachers list render
 
