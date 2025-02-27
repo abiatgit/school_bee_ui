@@ -3,8 +3,8 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import Image from "next/image";
 import React from "react";
-import Link from "next/link";
 import { role, parentsData } from "@/lib/data";
+import FormModel from "@/components/FormModel";
 
 type ParentType = {
   id: number;
@@ -60,15 +60,23 @@ const ParentsListPage = () => {
         <td className="hidden lg:table-cell">{item.address}</td>
         <td>
           <div className="flex items-center gap-2">
-            <Link href={`/list/teachers/${item.id}`} className="text-blue-500">
-              <button className="p-3 rounded-full flex items-center justify-center bg-abiSky w-7,h-7">
-                <Image src="/edit.png" alt="edit" width={16} height={16} />
-              </button>
-            </Link>
-            {role === "admin" && (
-              <button className="p-3 flex items-center justify-center rounded-full bg-abiPurple w-7,h-7">
-                <Image src="/delete.png" alt="edit" width={16} height={16} />
-              </button>
+          
+              {role === "admin" && (
+                <>
+                <FormModel
+                  table="parent"
+                  type="update"
+                  data={item}
+                  id={item.id.toString()}
+                />
+          
+                <FormModel
+                  table="parent"
+                  type="delete"
+                  data={item}
+                  id={item.id.toString()}
+                />
+              </>
             )}
           </div>
         </td>
@@ -90,9 +98,7 @@ const ParentsListPage = () => {
               <Image src="/sort.png" alt="add" width={14} height={14} />
             </button>
             {role === "admin" && (
-              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-abiYellow">
-                <Image src="/plus.png" alt="add" width={14} height={14} />
-              </button>
+             <FormModel table="parent" type="create" />
             )}
           </div>
         </div>

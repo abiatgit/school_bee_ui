@@ -5,6 +5,7 @@ import Image from "next/image";
 import React from "react";
 import Link from "next/link";
 import { role, teachersData } from "@/lib/data";
+import FormModel from "@/components/FormModel";
 
 type TeacherType = {
   id: number;
@@ -87,9 +88,10 @@ const TeachersListPage = () => {
               </button>
             </Link>
             {role === "admin" && (
-              <button className="p-3 flex items-center justify-center rounded-full bg-abiPurple w-7,h-7">
-                <Image src="/delete.png" alt="edit" width={16} height={16} />
-              </button>
+              // <button className="p-3 flex items-center justify-center rounded-full bg-abiPurple w-7,h-7">
+              //   <Image src="/delete.png" alt="edit" width={16} height={16} />
+              // </button>
+              <FormModel table="teacher" type="delete" data={item} id={item.id.toString()}/>
             )}
           </div>
         </td>
@@ -111,9 +113,10 @@ const TeachersListPage = () => {
               <Image src="/sort.png" alt="add" width={14} height={14} />
             </button>
             {role === "admin" && (
-              <button className="w-8 h-8 flex items-center justify-center rounded-full bg-abiYellow">
-                <Image src="/plus.png" alt="add" width={14} height={14} />
-              </button>
+              <FormModel table="teacher" type="create"/>
+              // <button className="w-8 h-8 flex items-center justify-center rounded-full bg-abiYellow">
+              //   <Image src="/plus.png" alt="add" width={14} height={14} />
+              // </button>
             )}
           </div>
         </div>

@@ -32,6 +32,10 @@
 ## 26-02-2025
 [X] table component
 [X] teachers list render
+[X] parent list render
+[X] student list render
+[X] exam list render
+[X] event list render
 [X] single teacher page
 [X] single student page
 
