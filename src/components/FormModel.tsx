@@ -37,6 +37,24 @@ const FormModel = ({ table, type, data, id }: FormModelProps) => {
   const handleClose = () => {
     setOpen(false);
   };
+  const From = () => {
+    return type === "delete" && id ? (
+      <form action={""} className="flex flex-col gap-4 p-4">
+        <span className="text-center text-lg font-medium">
+          Are you sure you want to delete this {table}?
+        </span>
+        <button
+          type="submit"
+          className="bg-red-500 text-white py-2 px-4 rounded-md border-none w-max self-center
+        "
+        >
+          Delete
+        </button>
+      </form>
+    ) : (
+      "create or update"
+    );
+  };
   return (
     <>
       <button
@@ -48,10 +66,13 @@ const FormModel = ({ table, type, data, id }: FormModelProps) => {
       {open && (
         <div className="w-screen h-screen absolute left-0 top-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
           <div className="bg-white p-4 rounded-md relative w-[90%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]">
-            hello
-          <div onClick={handleClose} className="absolute top-5f right-4 cursor-pointer">
-            <Image src="/close.png" alt="close" width={14} height={14} />
-          </div>
+            <From />
+            <div
+              onClick={handleClose}
+              className="absolute top-5 right-4 cursor-pointer"
+            >
+              <Image src="/close.png" alt="close" width={14} height={14} />
+            </div>
           </div>
         </div>
       )}
