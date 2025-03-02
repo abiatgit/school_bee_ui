@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import TeacherForm from "./forms/TeacherForm";
 
 interface FormModelProps {
   table:
@@ -52,7 +53,7 @@ const FormModel = ({ table, type, data, id }: FormModelProps) => {
         </button>
       </form>
     ) : (
-      "create or update"
+     <TeacherForm type={"create"} data={data}/>
     );
   };
   return (

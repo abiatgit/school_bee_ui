@@ -39,3 +39,14 @@
 [X] single teacher page
 [X] single student page
 
+## 27-02-2025
+[X] Delete form
+[X] Create form
+[X] Update form
+
+## 02-03-2025
+[X] Teacher form
+
+## Dependencies
+- react-hook-form
+
