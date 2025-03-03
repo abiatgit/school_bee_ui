@@ -3,6 +3,14 @@
 import Image from "next/image";
 import { useState } from "react";
 import TeacherForm from "./forms/TeacherForm";
+import StudentForm from "./forms/StudentForm";
+
+
+
+const forms: { [key: string]: (type: "create" | "update", data?: any) => JSX.Element; } = {
+  teacher: (type, data) => <TeacherForm type={type} data={data} />,
+  student: (type, data) => <StudentForm type={type} data={data} />
+};
 
 interface FormModelProps {
   table:
@@ -52,9 +60,9 @@ const FormModel = ({ table, type, data, id }: FormModelProps) => {
           Delete
         </button>
       </form>
-    ) : (
-     <TeacherForm type={"create"} data={data}/>
-    );
+    ) :type === "update" || type === "create" ? (
+      forms[table](type, data)
+    ) : null;
   };
   return (
     <>

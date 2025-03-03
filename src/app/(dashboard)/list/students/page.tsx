@@ -77,11 +77,7 @@ const StudentsListPage = () => {
         <td className="hidden lg:table-cell">{item.address}</td>
         <td>
           <div className="flex items-center gap-2">
-            {/* <Link href={`/list/teachers/${item.id}`} className="text-blue-500">
-              <button className="p-3 rounded-full flex items-center justify-center bg-abiSky w-7,h-7">
-                <Image src="/view.png" alt="edit" width={14} height={14} />
-              </button>
-            </Link> */}
+          
             {role === "admin" && (
               <>
                <FormModel table="student" type="delete"  id={item.id.toString()}/>

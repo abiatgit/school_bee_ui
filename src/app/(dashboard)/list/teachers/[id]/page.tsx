@@ -1,5 +1,6 @@
 import Announcements from "@/components/Announcements";
 import BigCalender from "@/components/BigCalender";
+import FormModel from "@/components/FormModel";
 import Performence from "@/components/Performence";
 import Image from "next/image";
 import Link from "next/link";
@@ -25,7 +26,24 @@ const SingleTeacherPage = () => {
               ></Image>
             </div>
             <div className="w-2/3 ms-4 flex flex-col justify-between gap-4">
+            <div className="flex items-center gap-2">
               <h2 className="text-2xl font-semibold">Mr.George</h2>
+              
+              <FormModel table="teacher" type="update" id="1" data={
+                {
+                  id: "1",
+                  username: "george",
+                  email: "george@gmail.com",
+                  password: "123456",
+                  firstName: "George",
+                  lastName: "Smith",
+                  phone: "9876543210",
+                  gender: "male",
+                  address: "1234567890",
+                  image: "https://media.istockphoto.com/id/1297832726/photo/portrait-of-a-smiling-young-businessman.jpg?s=612x612&w=0&k=20&c=32Qg7TnqfGkrDwTL3q0X0Kx9ab3JDzuqxzp4poH39zc=",
+                }
+              } />
+</div>
               <p className="text-sm text-gray-500">
                 Lorem, ipsum dolor sit amet conoluptatum dolorem ipsum illum
                 enim
