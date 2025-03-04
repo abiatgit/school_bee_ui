@@ -1,33 +1,67 @@
 "use client";
-
+import React from "react";
 import Image from "next/image";
 import { useState } from "react";
-import TeacherForm from "./forms/TeacherForm";
-import StudentForm from "./forms/StudentForm";
+// import TeacherForm from "./forms/TeacherForm";
+// import StudentForm from "./forms/StudentForm";
+import dynamic from "next/dynamic";
 
+const TeacherForm = dynamic(() => import("./forms/TeacherForm"), {
+ loading: () => <div>Loading...</div>,
+});
+const ParentForm = dynamic(() => import("./forms/ParentForm"), {
+  loading: () => <div>Loading...</div>,
+});
+const StudentForm = dynamic(() => import("./forms/StudentForm"), {
+  loading: () => <div>Loading...</div>,
+});
+const ClassForm = dynamic(() => import("./forms/ClassForm"), {
+  loading: () => <div>Loading...</div>,
+});
+const AnnouncementForm = dynamic(() => import("./forms/AnnouncementForm"), {
+  loading: () => <div>Loading...</div>,
+});
+const AttendanceForm = dynamic(() => import("./forms/AttendanceForm"), {
+  loading: () => <div>Loading...</div>,
+});
+const SubmitForm = dynamic(() => import("./forms/SubmitForm"), {
+  loading: () => <div>Loading...</div>,
+});
+const LessonForm = dynamic(() => import("./forms/LessonForm"), {
+  loading: () => <div>Loading...</div>,
+});
+const ExamForm = dynamic(() => import("./forms/ExamForm"), {
+  loading: () => <div>Loading...</div>,
+});
+const AssignmentForm = dynamic(() => import("./forms/AssignmentForm"), {
+  loading: () => <div>Loading...</div>,
+});
+const ResultForm = dynamic(() => import("./forms/ResultForm"), {
+  loading: () => <div>Loading...</div>,
+});
+const SubjectForm = dynamic(() => import("./forms/SubjuctForm"), {
+  loading: () => <div>Loading...</div>,
+});
 
-
-const forms: { [key: string]: (type: "create" | "update", data?: any) => JSX.Element; } = {
+const forms: { [key: string]: (type: "create" | "update", data?: any) => React.ReactElement; } = {
   teacher: (type, data) => <TeacherForm type={type} data={data} />,
-  student: (type, data) => <StudentForm type={type} data={data} />
+  student: (type, data) => <StudentForm type={type} data={data} />,
+  parent: (type, data) => <ParentForm type={type} data={data} />,
+  class: (type, data) => <ClassForm type={type} data={data} />,
+  announcement: (type, data) => <AnnouncementForm type={type} data={data} />,
+  attendance: (type, data) => <AttendanceForm type={type} data={data} />,
+  submit: (type, data) => <SubmitForm type={type} data={data} />,
+  lesson: (type, data) => <LessonForm type={type} data={data} />,
+  exam: (type, data) => <ExamForm type={type} data={data} />,
+  assignment: (type, data) => <AssignmentForm type={type} data={data} />,
+  result: (type, data) => <ResultForm type={type} data={data} />,
+  subject: (type, data) => <SubjectForm type={type} data={data} />,
 };
 
 interface FormModelProps {
-  table:
-    | "teacher"
-    | "student"
-    | "parent"
-    | "subject"
-    | "class"
-    | "lesson"
-    | "exam"
-    | "assignment"
-    | "attendance"
-    | "result"
-    | "event"
-    | "announcement";
-  type: "create" | "update" | "delete";
-  data?: any;
+  table: keyof FormData | "parent" | "subject" | "class" | "lesson" | "exam" |"assignment" | "attendance" | "result" | "event"|"student" | "teacher" | "announcement";
+  type: "create" | "update" | "delete" | "parent"
+  data?: Partial<FormData[keyof FormData]>;
   id?: string;
 }
 

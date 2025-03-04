@@ -35,35 +35,35 @@ const schema = z.object({
   image: z.instanceof(File, { message: "Image is required" }),
 });
 
-type TeacherFormData = z.infer<typeof schema>;
+type AnnouncementFormData = z.infer<typeof schema>;
 
-export default function TeacherForm({
+export default function AnnouncementForm({
   type,
   data,
 }: {
   type: "create" | "update";
-  data?: Partial<TeacherFormData>;
+  data?: Partial<AnnouncementFormData>;
 }) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<TeacherFormData>({
+  } = useForm<AnnouncementFormData>({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = handleSubmit((data: TeacherFormData) => {
+  const onSubmit = handleSubmit((data: AnnouncementFormData) => {
     console.log(data);
   });
 
   return (
     <form className="flex flex-col gap-8 " onSubmit={onSubmit}>
-      <h1 className="text-2xl font-bold">{type === "create" ? "Create a Teacher" : "Update a Teacher"}</h1>
+      <h1 className="text-2xl font-bold">{type === "create" ? "Create a Announcement" : "Update a Announcement"}</h1>
       <span className="text-sm text-gray-500 font-medium">
         Authentication Information
       </span>
       <div className="flex justify-between flex-wrap gap-4">
-        <InputField<TeacherFormData>
+        <InputField<AnnouncementFormData>
           label="Username"
           name="username"
           register={register}
@@ -73,7 +73,7 @@ export default function TeacherForm({
           defaultValue={data?.username}
         />
 
-        <InputField<TeacherFormData>
+        <InputField<AnnouncementFormData>
           label="Email"
           name="email"
           register={register}
@@ -82,7 +82,7 @@ export default function TeacherForm({
           type="email"
           defaultValue={data?.email}
         />
-        <InputField<TeacherFormData>
+        <InputField<AnnouncementFormData>
           label="Password"
           name="password"
           register={register}
@@ -93,7 +93,7 @@ export default function TeacherForm({
         />
       </div>
       <div className="flex justify-between flex-wrap gap-4">
-        <InputField<TeacherFormData>
+        <InputField<AnnouncementFormData>
           label="First Name"
           name="firstName"
           register={register}
@@ -102,7 +102,7 @@ export default function TeacherForm({
           type="text"
           defaultValue={data?.firstName}
         />
-        <InputField<TeacherFormData>
+        <InputField<AnnouncementFormData>
           label="Last Name"
           name="lastName"
           register={register}
@@ -111,7 +111,7 @@ export default function TeacherForm({
           type="text"
           defaultValue={data?.lastName}
         />
-        <InputField<TeacherFormData>
+        <InputField<AnnouncementFormData>
           label="Phone"
           name="phone"
           register={register}
@@ -122,7 +122,7 @@ export default function TeacherForm({
         />
       </div>
       <div className="flex justify-between flex-wrap gap-4">
-        <InputField<TeacherFormData>
+        <InputField<AnnouncementFormData>
           label="Address"
           name="address"
           register={register}
@@ -131,7 +131,7 @@ export default function TeacherForm({
           type="text"
           defaultValue={data?.address}
         />
-        <InputField<TeacherFormData>
+        <InputField<AnnouncementFormData>
           label="Blood Group"
           name="bloodGroup"
           register={register}
@@ -140,7 +140,7 @@ export default function TeacherForm({
           type="text"
           defaultValue={data?.bloodGroup}
         />
-        <InputField<TeacherFormData>
+                <InputField<AnnouncementFormData>
           label="Birth Date"
           name="birthDate"
           register={register}

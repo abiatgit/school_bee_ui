@@ -35,35 +35,35 @@ const schema = z.object({
   image: z.instanceof(File, { message: "Image is required" }),
 });
 
-type TeacherFormData = z.infer<typeof schema>;
+type SubmitFormData = z.infer<typeof schema>;
 
-export default function TeacherForm({
+export default function SubmitForm({
   type,
   data,
 }: {
   type: "create" | "update";
-  data?: Partial<TeacherFormData>;
+  data?: Partial<SubmitFormData>;
 }) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<TeacherFormData>({
+  } = useForm<SubmitFormData>({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = handleSubmit((data: TeacherFormData) => {
+  const onSubmit = handleSubmit((data: SubmitFormData) => {
     console.log(data);
   });
 
   return (
     <form className="flex flex-col gap-8 " onSubmit={onSubmit}>
-      <h1 className="text-2xl font-bold">{type === "create" ? "Create a Teacher" : "Update a Teacher"}</h1>
+      <h1 className="text-2xl font-bold">{type === "create" ? "Create a submit form" : "Update a submit form"}</h1>
       <span className="text-sm text-gray-500 font-medium">
         Authentication Information
       </span>
       <div className="flex justify-between flex-wrap gap-4">
-        <InputField<TeacherFormData>
+        <InputField<SubmitFormData>
           label="Username"
           name="username"
           register={register}
@@ -73,7 +73,7 @@ export default function TeacherForm({
           defaultValue={data?.username}
         />
 
-        <InputField<TeacherFormData>
+        <InputField<SubmitFormData>
           label="Email"
           name="email"
           register={register}
@@ -82,7 +82,7 @@ export default function TeacherForm({
           type="email"
           defaultValue={data?.email}
         />
-        <InputField<TeacherFormData>
+        <InputField<SubmitFormData>
           label="Password"
           name="password"
           register={register}
@@ -93,7 +93,7 @@ export default function TeacherForm({
         />
       </div>
       <div className="flex justify-between flex-wrap gap-4">
-        <InputField<TeacherFormData>
+        <InputField<SubmitFormData>
           label="First Name"
           name="firstName"
           register={register}
@@ -102,7 +102,7 @@ export default function TeacherForm({
           type="text"
           defaultValue={data?.firstName}
         />
-        <InputField<TeacherFormData>
+        <InputField<SubmitFormData>
           label="Last Name"
           name="lastName"
           register={register}
@@ -111,7 +111,7 @@ export default function TeacherForm({
           type="text"
           defaultValue={data?.lastName}
         />
-        <InputField<TeacherFormData>
+        <InputField<SubmitFormData>
           label="Phone"
           name="phone"
           register={register}
@@ -122,7 +122,7 @@ export default function TeacherForm({
         />
       </div>
       <div className="flex justify-between flex-wrap gap-4">
-        <InputField<TeacherFormData>
+        <InputField<SubmitFormData>
           label="Address"
           name="address"
           register={register}
@@ -131,7 +131,7 @@ export default function TeacherForm({
           type="text"
           defaultValue={data?.address}
         />
-        <InputField<TeacherFormData>
+        <InputField<SubmitFormData>
           label="Blood Group"
           name="bloodGroup"
           register={register}
@@ -140,7 +140,7 @@ export default function TeacherForm({
           type="text"
           defaultValue={data?.bloodGroup}
         />
-        <InputField<TeacherFormData>
+        <InputField<SubmitFormData>
           label="Birth Date"
           name="birthDate"
           register={register}
@@ -151,46 +151,46 @@ export default function TeacherForm({
         />
       </div>
       <div className="flex justify-between flex-wrap gap-4">
-      <div className="flex flex-col gap-2 w-ful md:w-1/4">
-        <label>{"Gender"}</label>
-        <select
-          {...register("gender")}
-          className="ring-[1.5px] ring-gray-300 rounded-md p-2"
-          defaultValue={data?.gender}
-        >
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
-        </select>
-        {errors?.gender?.message && (
-          <p className="text-red-500 text-xs">
-            {errors?.gender?.message as string}
-          </p>
-        )}
-      </div>
+        <div className="flex flex-col gap-2 w-ful md:w-1/4">
+          <label>{"Gender"}</label>
+          <select
+            {...register("gender")}
+            className="ring-[1.5px] ring-gray-300 rounded-md p-2"
+            defaultValue={data?.gender}
+          >
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+          {errors?.gender?.message && (
+            <p className="text-red-500 text-xs">
+              {errors?.gender?.message as string}
+            </p>
+          )}
+        </div>
 
-      <div className="flex flex-col gap-2 w-ful md:w-1/4">
-        <label className="text-sm font-medium text-gray-500 gap-2 cursor-pointer" htmlFor="img">
-          <Image src="/upload.png" alt="upload" width={28} height={28} />
-          <span>Upload Image</span>
-        </label>
-        <input
-          id="img"
-          type="file"
-          {...register("image")}
-          className="hidden"
-          accept="image/*"
-        />
-        {errors?.image?.message && (
-          <p className="text-red-500 text-xs">
-            {errors?.image?.message as string}
-          </p>
-        )}
-      </div>
+        <div className="flex flex-col gap-2 w-ful md:w-1/4">
+          <label className="text-sm font-medium text-gray-500 gap-2 cursor-pointer" htmlFor="img">
+            <Image src="/upload.png" alt="upload" width={28} height={28} />
+            <span>Upload Image</span>
+          </label>
+          <input
+            id="img"
+            type="file"
+            {...register("image")}
+            className="hidden"
+            accept="image/*"
+          />
+          {errors?.image?.message && (
+            <p className="text-red-500 text-xs">
+              {errors?.image?.message as string}
+            </p>
+          )}
+        </div>
       </div>
       <button
         type="submit"
-        className="bg-blue-500 text-white py-2 px-4 rounded-md border-none w-max self-center"
+        className="bg-abiBlue text-white py-2 px-4 rounded-md border-none w-max self-center"
       >
         {type === "create" ? "Create" : "Update"}
       </button>

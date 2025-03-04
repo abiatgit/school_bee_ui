@@ -50,3 +50,11 @@
 ## Dependencies
 - react-hook-form
 
+## 03-03-2025
+[X] Student form
+[X] next/dynamic (lazy loading)
+## Dependencies
+- react-hook-form
+- zod
+- zod-resolvers
+
