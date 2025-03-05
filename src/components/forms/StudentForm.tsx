@@ -4,9 +4,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputField from "../InputField";
 import Image from "next/image";
-
 const schema = z.object({
   username: z
+
     .string()
     .min(3, { message: "Username  must be 3 characters" })
     .max(20, { message: "Username  must be 20 characters" }),
@@ -45,10 +45,11 @@ export default function StudentForm({
   data?: Partial<StudentFormData>;
 }) {
   const {
-    register,
+       register,
     handleSubmit,
     formState: { errors },
-  } = useForm<StudentFormData>({
+  } = 
+    useForm<StudentFormData>({
     resolver: zodResolver(schema),
   });
 

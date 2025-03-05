@@ -58,3 +58,9 @@
 - zod
 - zod-resolvers
 
+## 04-03-2025
+## Backend
+- prisma
+- npm i prisma
+- npm i @prisma/client
+- npx prisma init

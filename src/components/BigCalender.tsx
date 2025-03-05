@@ -10,7 +10,7 @@ const BigCalender = () => {
   function handleViewChange(view: View) {
     setView(view);
   }
-
+ 
   return (
 
       <Calendar
