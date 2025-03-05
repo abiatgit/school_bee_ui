@@ -64,3 +64,13 @@
 - npm i prisma
 - npm i @prisma/client
 - npx prisma init
+- define all model
+- docker setuo
+- prisma migrate dev
+- prisma studio
+- create seed.ts
+- npm install -D typescript ts-node @types/node
+- prisma client
+- npx prisma migrate reset  
+- prisma db seed
+

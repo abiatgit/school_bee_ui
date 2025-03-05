@@ -4,20 +4,13 @@ import TableSearch from "@/components/TableSearch";
 import Image from "next/image";
 import React from "react";
 import Link from "next/link";
-import { role, teachersData } from "@/lib/data";
+import { role, } from "@/lib/data";
 import FormModel from "@/components/FormModel";
+import { Teacher, Subject, Class } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
-type TeacherType = {
-  id: number;
-  teacherId: string;
-  name: string;
-  email: string;
-  photo: string;
-  phone: string;
-  subjects: string[];
-  classes: string[];
-  address: string;
-};
+type TeacherList = Teacher & {subjects: Subject[], classes: Class[]}
+
 
 const columns = [
   {
@@ -55,49 +48,59 @@ const columns = [
   },
 ];
 
-const TeachersListPage = () => {
-  const teacherRow = (item: TeacherType) => {
-    return (
-      <tr
-        key={item.id}
-        className="boder-b border-gray-200 even:bg-slate-50 text-xs hover:bg-abiPurpleLight"
-      >
-        <td className="flex items-center gap-2 p-4">
-          <Image
-            src={item.photo}
-            alt={item.name}
-            width={32}
-            height={32}
-            className="rounded-full md:hidden xl:block w-10 h-10 object-cover"
-          />
-          <div className="flex flex-col">
-            <h3 className="text-sm font-semibold">{item.name}</h3>
-            <p className="text-xs text-gray-500">{item.email}</p>
-          </div>
-        </td>
-        <td className="hidden md:table-cell">{item.teacherId}</td>
-        <td className="hidden md:table-cell">{item.subjects.join(",")}</td>
-        <td className="hidden md:table-cell">{item.classes.join(",")}</td>
-        <td className="hidden lg:table-cell">{item.phone}</td>
-        <td className="hidden lg:table-cell">{item.address}</td>
-        <td>
-          <div className="flex items-center gap-2">
-            <Link href={`/list/teachers/${item.id}`} className="text-blue-500">
-              <button className="p-3 rounded-full flex items-center justify-center bg-abiSky w-7,h-7">
-                <Image src="/view.png" alt="edit" width={16} height={16} />
-              </button>
-            </Link>
-            {role === "admin" && (
-              // <button className="p-3 flex items-center justify-center rounded-full bg-abiPurple w-7,h-7">
-              //   <Image src="/delete.png" alt="edit" width={16} height={16} />
-              // </button>
-              <FormModel table="teacher" type="delete" data={item} id={item.id.toString()}/>
-            )}
-          </div>
-        </td>
-      </tr>
-    );
-  };
+const teacherRow = (item: TeacherList) => {
+  return (
+    <tr
+      key={item.id}
+      className="boder-b border-gray-200 even:bg-slate-50 text-xs hover:bg-abiPurpleLight"
+    >
+      <td className="flex items-center gap-2 p-4">
+        <Image
+          src={item.image || "/noAvatar.png"}
+          alt={item.name}
+          width={32}
+          height={32}
+          className="rounded-full md:hidden xl:block w-10 h-10 object-cover"
+        />
+        <div className="flex flex-col">
+          <h3 className="text-sm font-semibold">{item.name}</h3>
+          <p className="text-xs text-gray-500">{item.email}</p>
+        </div>
+      </td>
+      <td className="hidden md:table-cell">{item.username}</td>
+      <td className="hidden md:table-cell">{item.subjects.map((subject)=>subject.name).join(",")}</td>
+      <td className="hidden md:table-cell">{item.classes.map((clas)=>clas.title).join(",")}</td>
+      <td className="hidden lg:table-cell">{item.phone}</td>
+      <td className="hidden lg:table-cell">{item.address}</td>
+      <td>
+        <div className="flex items-center gap-2">
+          <Link href={`/list/teachers/${item.id}`} className="text-blue-500">
+            <button className="p-3 rounded-full flex items-center justify-center bg-abiSky w-7,h-7">
+              <Image src="/view.png" alt="edit" width={16} height={16} />
+            </button>
+          </Link>
+          {role === "admin" && (
+            // <button className="p-3 flex items-center justify-center rounded-full bg-abiPurple w-7,h-7">
+            //   <Image src="/delete.png" alt="edit" width={16} height={16} />
+            // </button>
+            <FormModel table="teacher" type="delete" data={item} id={item.id.toString()}/>
+          )}
+        </div>
+      </td>
+    </tr>
+  );
+};
+const TeachersListPage =async ({searchParams}: {[key:string]: string | undefined}) => {
+console.log(`SearchParams: ${searchParams}`)
+
+  const data = await prisma.teacher.findMany({
+    include: {
+      subjects: true,
+      classes: true,
+    },
+    take: 10,
+ 
+  });
   return (
     <div className="bg-white p-4 rounded-md flex-1 mt-0 m-4">
       {/* top */}
@@ -123,7 +126,7 @@ const TeachersListPage = () => {
       </div>
       {/* List */}
 
-      <Table columns={columns} renderRow={teacherRow} data={teachersData} />
+      <Table columns={columns} renderRow={teacherRow} data={data} />
       {/* pagination */}
 
       <Pagination />
