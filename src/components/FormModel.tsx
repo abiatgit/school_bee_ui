@@ -104,7 +104,7 @@ const FormModel = ({ table, type, data, id }: FormModelProps) => {
         onClick={handleOpen}
         className={`${size} ${bgColor} flex items-center justify-center rounded-full`}
       >
-        <Image src={`/${type}.png`} alt="icon" width={16} height={16}></Image>
+        <Image src={`/${type}.png`} alt="icon" width={14} height={16}></Image>
       </button>
       {open && (
         <div className="w-screen h-screen absolute left-0 top-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">

@@ -5,6 +5,7 @@ import Image from "next/image";
 import React from "react";
 import { role, studentsData } from "@/lib/data";
 import FormModel from "@/components/FormModel";
+import Link from "next/link";
 
 type StudentType = {
   id: number;
@@ -77,12 +78,17 @@ const StudentsListPage = () => {
         <td className="hidden lg:table-cell">{item.address}</td>
         <td>
           <div className="flex items-center gap-2">
-          
+            <Link href={`/list/students/${item.id}`} className="text-blue-500">
+              <button className="p-3 rounded-full flex items-center justify-center bg-abiSky w-6,h-6">
+                <Image src="/view.png" alt="edit" width={16} height={16} />
+              </button>
+            </Link>
             {role === "admin" && (
-              <>
-               <FormModel table="student" type="delete"  id={item.id.toString()}/>
-               <FormModel table="student" type="update" data={item} />
-              </>
+              <FormModel
+                table="student"
+                type="delete"
+                id={item.id.toString()}
+              />
             )}
           </div>
         </td>
@@ -107,7 +113,7 @@ const StudentsListPage = () => {
               // <button className="w-8 h-8 flex items-center justify-center rounded-full bg-abiYellow">
               //   <Image src="/plus.png" alt="add" width={14} height={14} />
               // </button>
-              <FormModel table="student" type="create"  />
+              <FormModel table="student" type="create" />
             )}
           </div>
         </div>
@@ -117,7 +123,7 @@ const StudentsListPage = () => {
       <Table columns={columns} renderRow={studentRow} data={studentsData} />
       {/* pagination */}
 
-      <Pagination />
+      <Pagination count={studentsData.length} page={1} />
     </div>
   );
 };

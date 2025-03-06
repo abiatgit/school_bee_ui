@@ -4,13 +4,13 @@ import TableSearch from "@/components/TableSearch";
 import Image from "next/image";
 import React from "react";
 import Link from "next/link";
-import { role, } from "@/lib/data";
+import { role } from "@/lib/data";
 import FormModel from "@/components/FormModel";
 import { Teacher, Subject, Class } from "@prisma/client";
 import prisma from "@/lib/prisma";
+import { PAGE_NUMBER, PAGE_SIZE } from "@/lib/settings";
 
-type TeacherList = Teacher & {subjects: Subject[], classes: Class[]}
-
+type TeacherList = Teacher & { subjects: Subject[]; classes: Class[] };
 
 const columns = [
   {
@@ -68,8 +68,12 @@ const teacherRow = (item: TeacherList) => {
         </div>
       </td>
       <td className="hidden md:table-cell">{item.username}</td>
-      <td className="hidden md:table-cell">{item.subjects.map((subject)=>subject.name).join(",")}</td>
-      <td className="hidden md:table-cell">{item.classes.map((clas)=>clas.title).join(",")}</td>
+      <td className="hidden md:table-cell">
+        {item.subjects.map((subject) => subject.name).join(",")}
+      </td>
+      <td className="hidden md:table-cell">
+        {item.classes.map((clas) => clas.title).join(",")}
+      </td>
       <td className="hidden lg:table-cell">{item.phone}</td>
       <td className="hidden lg:table-cell">{item.address}</td>
       <td>
@@ -80,27 +84,41 @@ const teacherRow = (item: TeacherList) => {
             </button>
           </Link>
           {role === "admin" && (
-            // <button className="p-3 flex items-center justify-center rounded-full bg-abiPurple w-7,h-7">
-            //   <Image src="/delete.png" alt="edit" width={16} height={16} />
-            // </button>
-            <FormModel table="teacher" type="delete" data={item} id={item.id.toString()}/>
+            <FormModel
+              table="teacher"
+              type="delete"
+              data={item}
+              id={item.id.toString()}
+            />
           )}
         </div>
       </td>
     </tr>
   );
 };
-const TeachersListPage =async ({searchParams}: {[key:string]: string | undefined}) => {
-console.log(`SearchParams: ${searchParams}`)
 
-  const data = await prisma.teacher.findMany({
-    include: {
-      subjects: true,
-      classes: true,
-    },
-    take: 10,
- 
-  });
+const TeachersListPage = async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) => {
+  const { page } = await searchParams;
+
+  const p = page ? parseInt(page as string) : 1;
+
+  const [data, count] = await prisma.$transaction([
+    prisma.teacher.findMany({
+      include: {
+        subjects: true,
+        classes: true,
+      },
+      take: PAGE_SIZE,
+      skip: (p - PAGE_NUMBER) * PAGE_SIZE,
+    }),
+
+    prisma.teacher.count(),
+  ]);
+
   return (
     <div className="bg-white p-4 rounded-md flex-1 mt-0 m-4">
       {/* top */}
@@ -115,12 +133,7 @@ console.log(`SearchParams: ${searchParams}`)
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-abiYellow">
               <Image src="/sort.png" alt="add" width={14} height={14} />
             </button>
-            {role === "admin" && (
-              <FormModel table="teacher" type="create"/>
-              // <button className="w-8 h-8 flex items-center justify-center rounded-full bg-abiYellow">
-              //   <Image src="/plus.png" alt="add" width={14} height={14} />
-              // </button>
-            )}
+            {role === "admin" && <FormModel table="teacher" type="create" />}
           </div>
         </div>
       </div>
@@ -129,7 +142,7 @@ console.log(`SearchParams: ${searchParams}`)
       <Table columns={columns} renderRow={teacherRow} data={data} />
       {/* pagination */}
 
-      <Pagination />
+      <Pagination count={count} page={p} />
     </div>
   );
 };

@@ -75,9 +75,9 @@ CREATE TABLE "Grade" (
 -- CreateTable
 CREATE TABLE "Class" (
     "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
     "capacity" INTEGER NOT NULL,
-    "supervisorId" TEXT NOT NULL,
+    "supervisorId" TEXT,
     "gradeId" INTEGER NOT NULL,
 
     CONSTRAINT "Class_pkey" PRIMARY KEY ("id")
@@ -109,7 +109,7 @@ CREATE TABLE "Lesson" (
 -- CreateTable
 CREATE TABLE "Exam" (
     "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
     "startTime" TIMESTAMP(3) NOT NULL,
     "endTime" TIMESTAMP(3) NOT NULL,
     "lessonId" INTEGER NOT NULL,
@@ -121,8 +121,8 @@ CREATE TABLE "Exam" (
 CREATE TABLE "Assignment" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
-    "startTime" TIMESTAMP(3) NOT NULL,
-    "dueTime" TIMESTAMP(3) NOT NULL,
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "dueDate" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "lessonId" INTEGER NOT NULL,
 
@@ -218,7 +218,7 @@ CREATE UNIQUE INDEX "Parent_phone_key" ON "Parent"("phone");
 CREATE UNIQUE INDEX "Grade_level_key" ON "Grade"("level");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Class_name_key" ON "Class"("name");
+CREATE UNIQUE INDEX "Class_title_key" ON "Class"("title");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Subject_name_key" ON "Subject"("name");
@@ -236,7 +236,7 @@ ALTER TABLE "Student" ADD CONSTRAINT "Student_classId_fkey" FOREIGN KEY ("classI
 ALTER TABLE "Student" ADD CONSTRAINT "Student_gradeId_fkey" FOREIGN KEY ("gradeId") REFERENCES "Grade"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Class" ADD CONSTRAINT "Class_supervisorId_fkey" FOREIGN KEY ("supervisorId") REFERENCES "Teacher"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Class" ADD CONSTRAINT "Class_supervisorId_fkey" FOREIGN KEY ("supervisorId") REFERENCES "Teacher"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Class" ADD CONSTRAINT "Class_gradeId_fkey" FOREIGN KEY ("gradeId") REFERENCES "Grade"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

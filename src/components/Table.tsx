@@ -13,28 +13,20 @@ const Table = ({
 }) => {
   return (
     <table className="w-full mt-4">
-    <thead>
-      <tr className="text-left border-gray-200 text-sm">
-        {columns.map((column) => (
-          <th key={String(column.accessor)} className={column.className}>
-            {column.headers}
-          </th>
-        ))}
-        {renderActions && <th></th>}
-      </tr>
-    </thead>
+      <thead>
+        <tr className="text-left border-gray-200 text-sm">
+          {columns.map((column) => (
+            <th key={String(column.accessor)} className={column.className}>
+              {column.headers}
+            </th>
+          ))}
+          {renderActions && <th></th>}
+        </tr>
+      </thead>
 
-    <tbody>
-     
-        {data.map((item) => (
-            renderRow(item)
-           
-        ))}
-    
-    </tbody>
-  </table>
-)
-  
+      <tbody>{data.map((item) => renderRow(item))}</tbody>
+    </table>
+  );
 };
 
 export default Table;
