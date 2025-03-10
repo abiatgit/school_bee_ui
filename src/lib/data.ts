@@ -915,7 +915,7 @@ export const announcementsData = [
   },
 ];
 
-const today = new Date(2025, 1, 25); // February 25, 2025
+const today = new Date(2025, 2, 10); // February 25, 2025
 
 export const calendarEvents = [
   {

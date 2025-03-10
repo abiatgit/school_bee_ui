@@ -62,7 +62,7 @@ interface FormModelProps {
   table: keyof FormData | "parent" | "subject" | "class" | "lesson" | "exam" |"assignment" | "attendance" | "result" | "event"|"student" | "teacher" | "announcement";
   type: "create" | "update" | "delete" | "parent"
   data?: Partial<FormData[keyof FormData]>;
-  id?: string;
+  id?: string | number
 }
 
 const FormModel = ({ table, type, data, id }: FormModelProps) => {

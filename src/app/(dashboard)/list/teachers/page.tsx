@@ -132,7 +132,6 @@ const TeachersListPage = async ({
     }
   }
 
-  const classId = queryParams.classId ? parseInt(queryParams.classId as string) : undefined;
 
   const [data, count] = await prisma.$transaction([
     prisma.teacher.findMany({

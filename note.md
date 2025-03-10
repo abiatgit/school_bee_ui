@@ -87,4 +87,10 @@
 [X] Search Teachers list 
       access the value from queryParam - pass that to the teachers page
       show only the teachers include on search text usign SWITCH Statement
+[X] Student List
+[X] Class List
+[X] Parent List
+[X] Subject List
+[X] Class List
+
 
