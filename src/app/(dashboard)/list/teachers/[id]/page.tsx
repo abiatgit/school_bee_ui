@@ -13,7 +13,7 @@ const SingleTeacherPage = () => {
         {/* top */}
         <div className="flex flex-col lg:flex-row gap-4">
           {/* userInfo */}
-          <div className="bg-abiSky py-6 px-4 rounded-md flex-1 flex gap">
+          <div className="bg-abiSky py-6 px-4 rounded-md flex-1 flex gap-4">
             <div className="w-1/3">
               <Image
                 src={
@@ -25,9 +25,9 @@ const SingleTeacherPage = () => {
                 className="w-36 h-36 rounded-full object-cover"
               ></Image>
             </div>
-            <div className="w-2/3 ms-4 flex flex-col justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-semibold">Mr.George</h2>
+            <div className="w-2/3 flex flex-col justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <h1 className="text-xl font-semibold">Mr.George</h1>
               
               <FormModel table="teacher" type="update" id="1" data={
                 {
@@ -91,7 +91,7 @@ const SingleTeacherPage = () => {
           {/* smallCard */}
           <div className="flex-1 flex  justify-between gap-4 flex-wrap">
             {/* card*/}
-            <div className="bg-white py-6 px-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[48%] 2xl:w-[48%]">
+            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
               <Image
                 src={"/singleAttendance.png"}
                 alt="calendar"
@@ -105,7 +105,7 @@ const SingleTeacherPage = () => {
               </div>
             </div>
             {/* card*/}
-            <div className="bg-white py-6 px-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[48%] 2xl:w-[48%]">
+            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
               <Image
                 src={"/singleClass.png"}
                 alt="calendar"
@@ -120,7 +120,7 @@ const SingleTeacherPage = () => {
             </div>
 
             {/* card*/}
-            <div className="bg-white py-6 px-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[48%] 2xl:w-[48%]">
+            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
               <Image
                 src={"/singleLesson.png"}
                 alt="calendar"
@@ -134,7 +134,7 @@ const SingleTeacherPage = () => {
               </div>
             </div>
             {/* card*/}
-            <div className="bg-white py-6 px-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[48%] 2xl:w-[48%]">
+            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
               <Image
                 src={"/singleClass.png"}
                 alt="calendar"

@@ -6,7 +6,7 @@ import React from "react";
 import Link from "next/link";
 import { role } from "@/lib/data";
 import FormModel from "@/components/FormModel";
-import { Teacher, Subject, Class } from "@prisma/client";
+import { Teacher, Subject, Class, Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { PAGE_NUMBER, PAGE_SIZE } from "@/lib/settings";
 
@@ -102,12 +102,41 @@ const TeachersListPage = async ({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
-  const { page } = await searchParams;
+  const { page, ...queryParams } = await searchParams;
+  console.log(`queryParams: ${JSON.stringify(queryParams)}`);
 
   const p = page ? parseInt(page as string) : 1;
 
+  // URL PARAM CONVERSION
+  const query: Prisma.TeacherWhereInput = {};
+  if(queryParams){
+    for(const [key,value] of Object.entries(queryParams)){
+      if(value !== undefined){
+      switch(key){
+        case "classId":
+          query.lessons = {
+            some: {
+              classId: parseInt(value as string)
+            }
+          };
+          break;
+          case "search":
+            query.name = {
+              contains: value as string,
+              mode: 'insensitive',}
+              break;
+              default:
+                break;
+         
+      }
+    }
+  }
+
+  const classId = queryParams.classId ? parseInt(queryParams.classId as string) : undefined;
+
   const [data, count] = await prisma.$transaction([
     prisma.teacher.findMany({
+      where: query,
       include: {
         subjects: true,
         classes: true,
@@ -116,7 +145,9 @@ const TeachersListPage = async ({
       skip: (p - PAGE_NUMBER) * PAGE_SIZE,
     }),
 
-    prisma.teacher.count(),
+    prisma.teacher.count({
+      where: query,
+    }),
   ]);
 
   return (
@@ -146,5 +177,6 @@ const TeachersListPage = async ({
     </div>
   );
 };
-
+}
 export default TeachersListPage;
+

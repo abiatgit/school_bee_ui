@@ -74,3 +74,17 @@
 - npx prisma migrate reset  
 - prisma db seed
 
+## 06-03-2025
+[X] Pagination
+[X] useRouter
+
+## 07-03-2025
+[X] prisma where input
+[X] prisma transaction for passing multiple queries
+[X] dynamic query for teachers list
+
+## 10/03/2024
+[X] Search Teachers list 
+      access the value from queryParam - pass that to the teachers page
+      show only the teachers include on search text usign SWITCH Statement
+

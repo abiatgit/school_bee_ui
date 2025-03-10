@@ -73,7 +73,7 @@ const SingleStudentPage = () => {
           {/* smallCard */}
           <div className="flex-1 flex  justify-between gap-4 flex-wrap">
             {/* card*/}
-            <div className="bg-white py-6 px-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[48%] 2xl:w-[48%]">
+            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
               <Image
                 src={"/singleAttendance.png"}
                 alt="calendar"
@@ -87,7 +87,8 @@ const SingleStudentPage = () => {
               </div>
             </div>
             {/* card*/}
-            <div className="bg-white py-6 px-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[48%] 2xl:w-[48%]">
+            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
+              
               <Image
                 src={"/singleClass.png"}
                 alt="calendar"
@@ -102,7 +103,7 @@ const SingleStudentPage = () => {
             </div>
 
             {/* card*/}
-            <div className="bg-white py-6 px-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[48%] 2xl:w-[48%]">
+            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
               <Image
                 src={"/singleLesson.png"}
                 alt="calendar"
@@ -116,7 +117,7 @@ const SingleStudentPage = () => {
               </div>
             </div>
             {/* card*/}
-            <div className="bg-white py-6 px-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[48%] 2xl:w-[48%]">
+            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
               <Image
                 src={"/singleClass.png"}
                 alt="calendar"
@@ -143,10 +144,10 @@ const SingleStudentPage = () => {
         <div className="bg-white rounded-md p-4 ">
           <h1 className="text-2xl font-semibold">Shortcuts</h1>
           <div className="mt-4 flex gap-4 flex-wrap text-xs text-gray-500">
-            <Link className="p-3 cursor-pointer rounded-md bg-abiSky text-gray-500" href={"/"}>Student&rsquo; Lessons</Link>
+            <Link className="p-3 cursor-pointer rounded-md bg-abiSky text-gray-500" href={`/list/teachers?classId=${1}`}>Student&rsquo; Teachers</Link>
             <Link className="p-3 cursor-pointer rounded-md bg-abiYellow text-gray-500" href={"/"}>Student&rsquo; Exams</Link>
             <Link className="p-3 cursor-pointer rounded-md bg-abiPurple text-gray-500" href={"/"}>Student&rsquo; Lessons</Link>
-            <Link className="p-3 cursor-pointer rounded-md bg-green-300 text-gray-" href={"/"}>Student&rsquo; Exams</Link>
+            <Link className="p-3 cursor-pointer rounded-md bg-green-300 text-gray-" href={"/"}>Student&rsquo; Results</Link>
             <Link className="p-3 cursor-pointer rounded-md bg-abiSky text-gray-" href={"/"}>Student&rsquo; Assignments</Link>
           </div>
         </div>
