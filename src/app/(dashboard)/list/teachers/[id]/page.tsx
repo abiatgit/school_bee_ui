@@ -163,7 +163,7 @@ const SingleTeacherPage = () => {
           <div className="mt-4 flex gap-4 flex-wrap text-xs text-gray-500">
             <Link className="p-3 cursor-pointer rounded-md bg-abiSky text-gray-500" href={`/list/classes?supervisorId=${"teacher2"}`}>Teeacher&rsquo; Classes</Link>
             <Link className="p-3 cursor-pointer rounded-md bg-abiYellow text-gray-500" href={`/list/students?teacherId=${"teacher1"}`}>Teeacher&rsquo; Students</Link>
-            <Link className="p-3 cursor-pointer rounded-md bg-abiPurple text-gray-500" href={"/"}>Teeacher&rsquo; Lessons</Link>
+            <Link className="p-3 cursor-pointer rounded-md bg-abiPurple text-gray-500" href={`/list/lessons?teacherId=${"teacher2"}`}>Teeacher&rsquo; Lessons</Link>
             <Link className="p-3 cursor-pointer rounded-md bg-green-300 text-gray-" href={"/"}>Teeacher&rsquo; Exams</Link>
             <Link className="p-3 cursor-pointer rounded-md bg-abiSky text-gray-" href={"/"}>Teeacher&rsquo; Assignments</Link>
           </div>
