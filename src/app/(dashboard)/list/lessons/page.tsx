@@ -9,13 +9,14 @@ import { Class, Lesson, Prisma, Subject, Teacher } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { PAGE_NUMBER, PAGE_SIZE } from "@/lib/settings";
 
-type LessonType = Lesson &{teacher:Teacher} &{Subject:Subject} & {Class:Class}
+type LessonType = Lesson & { teacher: Teacher } & { Subject: Subject } & {
+  Class: Class;
+};
 
 const columns = [
   {
     headers: "Subject Name",
     accessor: "subject",
-   
   },
   {
     headers: "Class",
@@ -45,67 +46,70 @@ const lessonRow = (item: LessonType) => {
         </div>
       </td>
       <td className="">{item.Class.title}</td>
-
-
-      <td className="hidden md:table-cell">{item.teacher.name +" "+ item.teacher.surname}</td>
+      <td className="hidden md:table-cell">
+        {item.teacher.name + " " + item.teacher.surname}
+      </td>
       <td>
         <div className="flex items-center gap-2">
-      
           {role === "admin" && (
             <>
-            <FormModel table="lesson" type="update" data={item} />
-         <FormModel table="lesson" type="delete" data={item} id={item.id.toString()}/>
-         </>
+              <FormModel table="lesson" type="update" data={item} />
+              <FormModel
+                table="lesson"
+                type="delete"
+                data={item}
+                id={item.id.toString()}
+              />
+            </>
           )}
         </div>
       </td>
     </tr>
   );
 };
-const LessonsListPage =  async ({
+const LessonsListPage = async ({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
   const { page, ...queryParams } = await searchParams;
-
+  console.log(`query param ${queryParams.search}`);
   const p = page ? parseInt(page as string) : 1;
 
   // URL PARAM CONVERSION
   const query: Prisma.LessonWhereInput = {};
   if (queryParams) {
-    for (const [key, value] of Object.entries(queryParams)) {
-      if (value !== undefined) {
-        switch (key) {
-          case "teacherId":
-            query.teacherId =value as string
-            break;
-          case "search":
-            query.teacherId = {
-              contains: value as string,
-              mode: "insensitive",
-            };
-            break;
-        }
-      }
+    if (queryParams.search) {
+      const searchValue = Array.isArray(queryParams.search)
+        ? queryParams.search[0]
+        : queryParams.search;
+      query.OR = [
+        { Subject: { name: { contains: searchValue, mode: "insensitive" } } },
+        { teacher: { name: { contains: searchValue, mode: "insensitive" } } },
+      ];
     }
 
-    const [data, count] = await prisma.$transaction([
-      prisma.lesson.findMany({
-        where: query,
-        include: {
-          Subject : {select:{name:true}},
-          Class: {select:{title:true}},
-          teacher: {select:{name:true,surname:true}}
-        },
-        take: PAGE_SIZE,
-        skip: (p - PAGE_NUMBER) * PAGE_SIZE,
-      }) ,
+    if (queryParams.classId) {
+      query.classId = parseInt(queryParams.classId as string);
+    }
+  }
 
-      prisma.lesson.count({
-        where: query,
-      }),
-    ]);
+  const [data, count] = await prisma.$transaction([
+    prisma.lesson.findMany({
+      where: query,
+      include: {
+        Subject: { select: { name: true } },
+        Class: { select: { title: true } },
+        teacher: { select: { name: true, surname: true } },
+      },
+      take: PAGE_SIZE,
+      skip: (p - PAGE_NUMBER) * PAGE_SIZE,
+    }),
+
+    prisma.lesson.count({
+      where: query,
+    }),
+  ]);
   return (
     <div className="bg-white p-4 rounded-md flex-1 mt-0 m-4">
       {/* top */}
@@ -122,8 +126,7 @@ const LessonsListPage =  async ({
             </button>
             {role === "admin" && (
               <>
-
-              <FormModel table="lesson" type="create" />
+                <FormModel table="lesson" type="create" />
               </>
             )}
           </div>
@@ -138,5 +141,5 @@ const LessonsListPage =  async ({
     </div>
   );
 };
-}
+
 export default LessonsListPage;

@@ -84,6 +84,7 @@ const ParentsListPage = async ({
 }) => {
   const { page, ...queryParams } = await searchParams;
 
+
   const p = page ? parseInt(page as string) : 1;
 
   // URL PARAM CONVERSION

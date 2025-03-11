@@ -145,10 +145,10 @@ const SingleStudentPage = () => {
           <h1 className="text-2xl font-semibold">Shortcuts</h1>
           <div className="mt-4 flex gap-4 flex-wrap text-xs text-gray-500">
             <Link className="p-3 cursor-pointer rounded-md bg-abiSky text-gray-500" href={`/list/teachers?classId=${1}`}>Student&rsquo; Teachers</Link>
-            <Link className="p-3 cursor-pointer rounded-md bg-abiYellow text-gray-500" href={"/"}>Student&rsquo; Exams</Link>
-            <Link className="p-3 cursor-pointer rounded-md bg-abiPurple text-gray-500" href={"/"}>Student&rsquo; Lessons</Link>
-            <Link className="p-3 cursor-pointer rounded-md bg-green-300 text-gray-" href={"/"}>Student&rsquo; Results</Link>
-            <Link className="p-3 cursor-pointer rounded-md bg-abiSky text-gray-" href={"/"}>Student&rsquo; Assignments</Link>
+            <Link className="p-3 cursor-pointer rounded-md bg-abiYellow text-gray-500" href={`/list/exams?classId=${1}`}>Student&rsquo; Exams</Link>
+            <Link className="p-3 cursor-pointer rounded-md bg-abiPurple text-gray-500" href={`/list/lessons?classId=${2}`}>Student&rsquo; Lessons</Link>
+            <Link className="p-3 cursor-pointer rounded-md bg-abiSky text-gray-" href={`/list/assignments?classId=${2}` }>Student&rsquo; Assignments</Link>
+            <Link className="p-3 cursor-pointer rounded-md bg-green-300 text-gray-"   href={`/list/results?classId=${2}`}>Student&rsquo; Results</Link>
           </div>
         </div>
         <Performence />
