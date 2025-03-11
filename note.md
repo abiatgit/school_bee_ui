@@ -93,4 +93,8 @@
 [X] Subject List
 [X] Class List
 
+## 11/03/2024
+ [X] Prisma nexted query (include ,select,where)
+ [X] Exams List 
+ [X] Lesson List
 
