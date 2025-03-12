@@ -98,3 +98,11 @@
  [X] Exams List 
  [X] Lesson List
 
+## 12/03/2024
+ [X] Assignment List
+ [X] Announcement List
+ [X] Event List
+ [X] Result List
+ [X] Fetch Data with Query Params on the URL
+
+

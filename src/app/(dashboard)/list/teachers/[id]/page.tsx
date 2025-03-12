@@ -165,7 +165,7 @@ const SingleTeacherPage = () => {
             <Link className="p-3 cursor-pointer rounded-md bg-abiYellow text-gray-500" href={`/list/students?teacherId=${"teacher1"}`}>Teeacher&rsquo; Students</Link>
             <Link className="p-3 cursor-pointer rounded-md bg-abiPurple text-gray-500" href={`/list/lessons?teacherId=${"teacher2"}`}>Teeacher&rsquo; Lessons</Link>
             <Link className="p-3 cursor-pointer rounded-md bg-green-300 text-gray-" href={`/list/exams?teacherId=${"teacher4"}`}>Teeacher&rsquo; Exams</Link>
-            <Link className="p-3 cursor-pointer rounded-md bg-abiSky text-gray-"  href={`/list/lessons?teacherId=${"teacher2"}`}>Teeacher&rsquo; Assignments</Link>
+            <Link className="p-3 cursor-pointer rounded-md bg-abiSky text-gray-"  href={`/list/assignments?teacherId=${"teacher2"}`}>Teeacher&rsquo; Assignments</Link>
           </div>
         </div>
         <Performence />

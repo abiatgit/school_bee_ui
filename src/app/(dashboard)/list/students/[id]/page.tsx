@@ -148,7 +148,7 @@ const SingleStudentPage = () => {
             <Link className="p-3 cursor-pointer rounded-md bg-abiYellow text-gray-500" href={`/list/exams?classId=${1}`}>Student&rsquo; Exams</Link>
             <Link className="p-3 cursor-pointer rounded-md bg-abiPurple text-gray-500" href={`/list/lessons?classId=${2}`}>Student&rsquo; Lessons</Link>
             <Link className="p-3 cursor-pointer rounded-md bg-abiSky text-gray-" href={`/list/assignments?classId=${2}` }>Student&rsquo; Assignments</Link>
-            <Link className="p-3 cursor-pointer rounded-md bg-green-300 text-gray-"   href={`/list/results?classId=${2}`}>Student&rsquo; Results</Link>
+            <Link className="p-3 cursor-pointer rounded-md bg-green-300 text-gray-"   href={`/list/results?studentId"=${2}`}>Student&rsquo; Results</Link>
           </div>
         </div>
         <Performence />

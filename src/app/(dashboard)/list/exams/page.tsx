@@ -10,7 +10,7 @@ import prisma from "@/lib/prisma";
 import { PAGE_NUMBER, PAGE_SIZE } from "@/lib/settings";
 
 type ExamType = Exam & {
-  lesson: { subject: Subject; class: Class; teacher: Teacher };
+  lesson: { Subject: Subject; Class: Class; teacher: Teacher };
 };
 
 const columns = [
@@ -49,8 +49,7 @@ const examRow = (item: ExamType) => {
           <h3 className="text-sm font-semibold">{item.lesson.Subject.name}</h3>
         </div>
       </td>
-      <td className="">{item.id}</td>
-
+      <td className="">{item.lesson.Class.title}</td>
       <td className="hidden md:table-cell">{item.lesson.teacher.name}</td>
       <td className="hidden md:table-cell">
         {new Intl.DateTimeFormat("en-US").format(item.startTime)}
@@ -117,8 +116,9 @@ const ExamsListPage = async ({
           lesson: {
             select: {
               Subject: { select: { name: true } },
-              teacher:  { select: { name: true } },
-              Class:{ select: {title:true }}},
+              teacher: { select: { name: true } },
+              Class: { select: { title: true } }
+            },
           },
         },
         take: PAGE_SIZE,
