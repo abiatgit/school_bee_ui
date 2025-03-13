@@ -105,4 +105,16 @@
  [X] Result List
  [X] Fetch Data with Query Params on the URL
 
+ ## 13/03/2024
+ [X]Using Clerk for user authentication and management 
+    Clerk is a comprehensive user authentication and management platform designed for modern 
+    web and mobile applications15. It offers a suite of tools and services to simplify the 
+    implementation of secure authentication processes.
+[X] npm i @clerk/nextjs
+[X] Middleware for authentication
+[X] set up sign in page
+[X] Clerk elements for sign in and sign up (customization)
+      npm install @clerk/elements
+
+
 
