@@ -3,8 +3,26 @@
 import { Button } from "@/components/ui/button";
 import * as Clerk from "@clerk/elements/common";
 import * as SignIn from "@clerk/elements/sign-in";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 
 export default function SignInPage() {
+  const router = useRouter();
+  const { isSignedIn, user, isLoaded } = useUser();
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      const role = user.publicMetadata.role;
+
+      if (role) {
+        router.push(`${role}`);
+      } else {
+        console.warn("No role found on user metadata.");
+        // Optional: handle no role fallback
+      }
+    }
+  }, [isLoaded, isSignedIn, user, router]);
   return (
     <div className="flex  items-center justify-center h-screen ">
       <SignIn.Root>

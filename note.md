@@ -115,6 +115,11 @@
 [X] set up sign in page
 [X] Clerk elements for sign in and sign up (customization)
       npm install @clerk/elements
-
+User Metadata- Public - "role" : "admin"
+    https://clerk.com/docs/references/nextjs/read-session-data
+    - Then chek the role from current user rediect to the the specific route
+    - add parent,teacher,student data  and roles in clerk
+[X] createRouteMatcher()  is a Clerk helper function that allows you to protect multiple 
+    routes.
 
 

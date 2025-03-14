@@ -1,14 +1,22 @@
+
+"use client"
 import React from "react";
 import Image from "next/image";
-import { UserButton } from "@clerk/nextjs";
+import { UserButton} from "@clerk/nextjs";
+
 
 const Navbar = () => {
+
   return (
     <div className="flex items-center justify-between p-4">
       {/* SearchBar */}
       <div className="hidden md:flex items-center gap-2 text-sm rounded-full ring-[1.5px] ring-gray-300 px-2">
         <Image src={"/search.png"} alt="search" width={14} height={14} />
-        <input type="text" placeholder="Search..." className="w-[200px] p-2 bg-transparent outline-none"></input>
+        <input
+          type="text"
+          placeholder="Search..."
+          className="w-[200px] p-2 bg-transparent outline-none"
+        ></input>
       </div>
       {/* Icons and user */}
       <div className="flex items-center gap-6 justify-end w-full">
@@ -22,7 +30,9 @@ const Navbar = () => {
             width={20}
             height={20}
           ></Image>
-          <div className="absolute -top-3 -right-3 w-5 h-5 flex items-center justify-center bg-purple-500 text-white rounded-full text-sm">1</div>
+          <div className="absolute -top-3 -right-3 w-5 h-5 flex items-center justify-center bg-purple-500 text-white rounded-full text-sm">
+            1
+          </div>
         </div>
         <div className="flex flex-col">
           <span className="text-xs leading-3 font-medium">Abi George</span>
