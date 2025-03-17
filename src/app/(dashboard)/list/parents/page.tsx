@@ -9,6 +9,7 @@ import { Parent, Prisma, Student } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { PAGE_NUMBER, PAGE_SIZE } from "@/lib/settings";
 
+
 type ParentList= Parent & {Students:Student[]}
 
 const columns = [
@@ -55,7 +56,7 @@ const parentRow = (item: ParentList) => {
       <td className="hidden lg:table-cell">{item.address}</td>
       <td>
         <div className="flex items-center gap-2">
-          {role === "admin" && (
+          {role === "admin" ? (
             <>
               <FormModel
                 table="parent"
@@ -71,17 +72,21 @@ const parentRow = (item: ParentList) => {
                 id={item.id.toString()}
               />
             </>
-          )}
+          ) : null}
         </div>
       </td>
     </tr>
   );
 };
 const ParentsListPage = async ({
+  
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
+
+
+
   const { page, ...queryParams } = await searchParams;
 
 

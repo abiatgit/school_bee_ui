@@ -1,4 +1,4 @@
-import { metadata } from './app/layout';
+
 import { clerkMiddleware , createRouteMatcher} from "@clerk/nextjs/server";
 import { routeAccessMap} from "@/lib/settings"
 import { NextResponse } from 'next/server';

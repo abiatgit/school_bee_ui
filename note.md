@@ -122,4 +122,7 @@ User Metadata- Public - "role" : "admin"
 [X] createRouteMatcher()  is a Clerk helper function that allows you to protect multiple 
     routes.
 
+## 15/03/2025
+[X] access the role from the current user and update the list page
+
 

@@ -1,13 +1,15 @@
+
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import Image from "next/image";
 import React from "react";
-import { role } from "@/lib/data";
 import FormModel from "@/components/FormModel";
 import { Announcement, Class, Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { PAGE_NUMBER, PAGE_SIZE } from "@/lib/settings";
+import {role} from "@/lib/data"
+
 
   type AnnouncementType = Announcement & {
     
@@ -29,13 +31,14 @@ const columns = [
     className: "hidden md:table-cell",
   },
 
-  {
+  (role==="admin" && {
     headers: "Actions",
     accessor: "actions",
-  },
+  }),
 ];
 
-const announcementRow = (item: AnnouncementType) => {
+const announcementRow =async (item: AnnouncementType) => {
+
   return (
     <tr
       key={item.id}
@@ -53,7 +56,7 @@ const announcementRow = (item: AnnouncementType) => {
       <td>
         <div className="flex items-center gap-2">
        
-          {role === "admin" && 
+          {role=== "admin" && 
           <>
           <FormModel table="announcement" type="update" data={item}  />
            <FormModel table="announcement" type="delete" data={item} />
@@ -64,11 +67,17 @@ const announcementRow = (item: AnnouncementType) => {
     </tr>
   );
 };
-const AnnouncementsListPage =  async ({
+  const AnnouncementsListPage =  async ({
+
+
+
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
+
+
+
   const { page, ...queryParams } = await searchParams;
   console.log(`queryParams: ${JSON.stringify(queryParams)}`);
 
@@ -131,7 +140,7 @@ const AnnouncementsListPage =  async ({
       </div>
       {/* List */}
 
-      <Table columns={columns} renderRow={announcementRow} data={data} />
+      <Table columns={columns } renderRow={announcementRow} data={data} />
       {/* pagination */}
 
       <Pagination page={p} count={count} />
