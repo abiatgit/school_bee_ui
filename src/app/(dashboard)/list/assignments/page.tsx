@@ -10,7 +10,6 @@ import { PAGE_NUMBER, PAGE_SIZE } from "@/lib/settings";
 import {role} from "@/lib/data"
 
 
-
 type AssignmentType = Assignment& {
   lesson: 
   { Subject: Subject; 

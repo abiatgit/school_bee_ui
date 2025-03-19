@@ -84,7 +84,7 @@ const FormModel = ({ table, type, data, id }: FormModelProps) => {
     return type === "delete" && id ? (
       <form action={""} className="flex flex-col gap-4 p-4">
         <span className="text-center text-lg font-medium">
-          Are you sure you want to delete this {table}?
+          Are you sure you want to delete this {"this"}?
         </span>
         <button
           type="submit"
