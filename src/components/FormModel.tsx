@@ -42,6 +42,9 @@ const ResultForm = dynamic(() => import("./forms/ResultForm"), {
 const SubjectForm = dynamic(() => import("./forms/SubjuctForm"), {
   loading: () => <div>Loading...</div>,
 });
+const EventForm = dynamic(() => import("./forms/EventForm"), {
+  loading: () => <div>Loading...</div>,
+});
 
 const forms: { [key: string]: (type: "create" | "update", data?: any) => React.ReactElement; } = {
   teacher: (type, data) => <TeacherForm type={type} data={data} />,
@@ -56,10 +59,11 @@ const forms: { [key: string]: (type: "create" | "update", data?: any) => React.R
   assignment: (type, data) => <AssignmentForm type={type} data={data} />,
   result: (type, data) => <ResultForm type={type} data={data} />,
   subject: (type, data) => <SubjectForm type={type} data={data} />,
+  event: (type, data) => <EventForm type={type} data={data} />,
 };
 
 interface FormModelProps {
-  table: keyof FormData | "parent" | "subject" | "class" | "lesson" | "exam" |"assignment" | "attendance" | "result" | "event"|"student" | "teacher" | "announcement";
+  table: Exclude<keyof FormData, symbol>  | "parent" | "subject" | "class" | "lesson" | "exam" |"assignment" | "attendance" | "result" | "event"|"student" | "teacher" | "announcement";
   type: "create" | "update" | "delete" | "parent"
   data?: Partial<FormData[keyof FormData]>;
   id?: string | number
@@ -84,12 +88,11 @@ const FormModel = ({ table, type, data, id }: FormModelProps) => {
     return type === "delete" && id ? (
       <form action={""} className="flex flex-col gap-4 p-4">
         <span className="text-center text-lg font-medium">
-          Are you sure you want to delete this {"this"}?
+          Are you sure you want to delete this {}?
         </span>
         <button
           type="submit"
-          className="bg-red-500 text-white py-2 px-4 rounded-md border-none w-max self-center
-        "
+          className="bg-red-500 text-white py-2 px-4 rounded-md border-none w-max self-center"
         >
           Delete
         </button>

@@ -3,8 +3,9 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import Image from "next/image";
 import React from "react";
-import { role,examsData } from "@/lib/data";
+import {examsData } from "@/lib/data";
 import FormModel from "@/components/FormModel";
+import { auth } from "@clerk/nextjs/server";
 
 type LessonType = {
   id: number;
@@ -14,34 +15,35 @@ type LessonType = {
   date: string;
 };
 
-const columns = [
-  {
-    headers: "Subject",
-    accessor: "subject",
-   
-  },
-  {
-    headers: "Class",
-    accessor: "class",
-    
-  },
-  {
-    headers: "Teacher",
-    accessor: "teacher",
-    className: "hidden md:table-cell",
-  },
-  {
-    headers: "Due Date",
-    accessor: "dueDate",
-    className: "hidden md:table-cell",
-  },
-  {
-    headers: "Actions",
-    accessor: "actions",
-  },
-];
 
-const ExamsListPage = () => {
+
+const AttendanceListPage = async () => {
+  const { sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role: string })?.role;
+  const baseColumns = [
+    {
+      headers: "Subject",
+      accessor: "subject",
+    },
+    {
+      headers: "Class",
+      accessor: "class",
+    },
+    {
+      headers: "Teacher",
+      accessor: "teacher",
+      className: "hidden md:table-cell",
+    },
+    {
+      headers: "Due Date",
+      accessor: "dueDate",
+      className: "hidden md:table-cell",
+    }
+  ];
+  
+  const columns = (role === "admin" || role === "teacher")
+    ? [...baseColumns, { headers: "Actions", accessor: "actions" }]
+    : baseColumns;
   const examRow = (item: LessonType) => {
     return (
       <tr
@@ -54,8 +56,6 @@ const ExamsListPage = () => {
           </div>
         </td>
         <td className="">{item.class}</td>
- 
-
         <td className="hidden md:table-cell">{item.teacher}</td>
         <td className="hidden md:table-cell">{item.date}</td>
         <td>
@@ -64,7 +64,7 @@ const ExamsListPage = () => {
             {role === "admin" && (
               <>
               <FormModel table="attendance" type="update" data={item} />
-              <FormModel table="attendance" type="delete" data={item} />
+              <FormModel table="attendance" type="delete" data={item} id={item.id} />
               </>
             )}
           </div>
@@ -72,6 +72,7 @@ const ExamsListPage = () => {
       </tr>
     );
   };
+  
   return (
     <div className="bg-white p-4 rounded-md flex-1 mt-0 m-4">
       {/* top */}
@@ -97,9 +98,9 @@ const ExamsListPage = () => {
       <Table columns={columns} renderRow={examRow} data={examsData} />
       {/* pagination */}
 
-      <Pagination />
+      <Pagination count={10} page={1} />
     </div>
   );
 };
 
-export default ExamsListPage;
+export default AttendanceListPage;

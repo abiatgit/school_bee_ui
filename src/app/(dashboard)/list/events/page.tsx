@@ -3,86 +3,92 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import Image from "next/image";
 import React from "react";
-import { role, } from "@/lib/data";
 import FormModel from "@/components/FormModel";
 import { Class, Event, Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { PAGE_NUMBER, PAGE_SIZE } from "@/lib/settings";
+import { auth } from "@clerk/nextjs/server";
 
 type EventType = Event & {
   class: Class;
 };
 
-const columns = [
-  {
-    headers: "Title",
-    accessor: "title",
-  },
-  {
-    headers: "Class",
-    accessor: "class",
-  },
-  {
-    headers: "Date",
-    accessor: "date",
-    className: "hidden md:table-cell",
-  },
-  {
-    headers: "Start Time",
-    accessor: "startTime",
-    className: "hidden md:table-cell",
-  },
-  {
-    headers: "End Time",
-    accessor: "endTime",
-    className: "hidden md:table-cell",
-  },
-  {
-    headers: "Actions",
-    accessor: "actions",
-  },
-];
 
-const eventRow = (item: EventType) => {
-  return (
-    <tr
-      key={item.id}
-      className="boder-b border-gray-200 even:bg-slate-50 text-xs hover:bg-abiPurpleLight"
-    >
-      <td className="flex items-center gap-2 p-4">
-        <div className="flex flex-col">
-          <h3 className="text-sm font-semibold">{item.title}</h3>
-        </div>
-      </td>
-      <td className="">{item.class.title}</td>
-      <td className="hidden md:table-cell">{new Intl.DateTimeFormat("en-US").format(item.startDate)}</td>
-      <td className="hidden md:table-cell">{new Intl.DateTimeFormat("en-US", {hour: "2-digit", minute: "2-digit", hour12: false}).format(item.startDate)}</td>
-      <td className="hidden md:table-cell">{new Intl.DateTimeFormat("en-US").format(item.endDate)}</td>
-  
-      <td>
-        <div className="flex items-center gap-2">
-          {role === "admin" && (
-        <>
-        <FormModel table="event" type="update" data={item} />
-        <FormModel table="event" type="delete" data={item} />
-        </>
-          )}
-        </div>
-      </td>
-    </tr>
-  );
-};
+
 const EventsListPage =  async ({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
+
+  const { sessionClaims ,userId} = await auth();
+  const role = (sessionClaims?.metadata as { role: string })?.role;
+
+  const baseColumns = [
+    {
+      headers: "Title",
+      accessor: "title",
+    },
+    {
+      headers: "Class",
+      accessor: "class",
+    },
+    {
+      headers: "Date",
+      accessor: "date",
+      className: "hidden md:table-cell",
+    },
+    {
+      headers: "Start Time",
+      accessor: "startTime",
+      className: "hidden md:table-cell",
+    },
+    {
+      headers: "End Time",
+      accessor: "endTime",
+      className: "hidden md:table-cell",
+    },
+  ];
+
+  const columns = (role === "admin")
+    ? [...baseColumns, { headers: "Actions", accessor: "actions" }]
+    : baseColumns;
+  
+  const eventRow = (item: EventType) => {
+    return (
+      <tr
+        key={item.id}
+        className="boder-b border-gray-200 even:bg-slate-50 text-xs hover:bg-abiPurpleLight"
+      >
+        <td className="flex items-center gap-2 p-4">
+          <div className="flex flex-col">
+            <h3 className="text-sm font-semibold">{item.title}</h3>
+          </div>
+        </td>
+        <td className="">{item?.class?.title}</td>
+        <td className="hidden md:table-cell">{new Intl.DateTimeFormat("en-US").format(item.startDate)}</td>
+        <td className="hidden md:table-cell">{new Intl.DateTimeFormat("en-US", {hour: "2-digit", minute: "2-digit", hour12: false}).format(item.startDate)}</td>
+        <td className="hidden md:table-cell">{new Intl.DateTimeFormat("en-US").format(item.endDate)}</td>
+    
+        <td>
+          <div className="flex items-center gap-2">
+            {role === "admin" && (
+          <>
+            <FormModel table="event" type="update" data={item}  />
+            <FormModel table="event" type="delete" data={item} id={item.id} />
+          </>
+            )}
+          </div>
+        </td>
+      </tr>
+    );
+  };
   const { page, ...queryParams } = await searchParams;
   console.log(`queryParams: ${JSON.stringify(queryParams)}`);
 
   const p = page ? parseInt(page as string) : 1;
 
-  // URL PARAM CONVERSION
+  // URL PARAM CONDITION
   const query: Prisma.EventWhereInput = {};
   if(queryParams){
     for(const [key,value] of Object.entries(queryParams)){
@@ -100,7 +106,16 @@ const EventsListPage =  async ({
       }
     }
   }
-
+// RoleCondition
+  const roleCondition = {
+    teacher: { lessons: { some: { teacherId: userId as string } } },
+    student: { students: { some: { id: userId as string } } },
+    parent: { students: { some: { parentId: userId as string } } }
+  }
+  query.OR = [
+    { classId: null },
+    { class: roleCondition[role as keyof typeof roleCondition] || {} }
+  ]
 
   const [data, count] = await prisma.$transaction([
     prisma.event.findMany({

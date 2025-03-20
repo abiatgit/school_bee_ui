@@ -20,10 +20,10 @@ const AnnouncementsListPage = async ({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
-  const { sessionClaims } = await auth();
+  const { sessionClaims ,userId} = await auth();
 const role = (sessionClaims?.metadata as { role: string })?.role;
 console.log(`role: ${role}`);
-  const columns = [
+  const baseColumns = [
     {
       headers: "Title",
       accessor: "title",
@@ -36,12 +36,12 @@ console.log(`role: ${role}`);
       headers: "Date",
       accessor: "date",
       className: "hidden md:table-cell",
-    },
-    role === "admin" && {
-      headers: "Actions",
-      accessor: "actions",
-    },
-  ].filter(Boolean)
+    }
+  ];
+
+  const columns = role === "admin"
+    ? [...baseColumns, { headers: "Actions", accessor: "actions" }]
+    : baseColumns;
   const announcementRow = (item: AnnouncementType) => {
     console.log(`item: ${JSON.stringify(item)}`);
     return (
@@ -91,6 +91,17 @@ console.log(`role: ${role}`);
         }
       }
     }
+
+    const roleCondition = {
+      teacher: { lessons: { some: { teacherId: userId as string } } },
+      student: { students: { some: { id: userId as string } } },
+      parent: { students: { some: { parentId: userId as string } } }
+    }
+    query.OR = [
+      { classId: undefined },
+      { class: roleCondition[role as keyof typeof roleCondition] || {} }
+    ]
+
     const [data, count] = await prisma.$transaction([
       prisma.announcement.findMany({
         where: query,
