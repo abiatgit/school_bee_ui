@@ -3,31 +3,34 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import Image from "next/image";
 import React from "react";
-import { role} from "@/lib/data";
 import FormModel from "@/components/FormModel";
 import { Prisma, Subject ,Teacher} from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { PAGE_NUMBER, PAGE_SIZE } from "@/lib/settings";
+import { auth } from "@clerk/nextjs/server";
 
 type SubjectType =Subject & {Teachers:Teacher[]}
 
-const columns = [
-  {
-    headers: "Subject Name",
-    accessor: "subjectName",
+const SubjectsListPage =async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) => {
+  const { sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role: string })?.role;
 
-  },
-  {
-    headers: "Teacher Name",
-    accessor: "teacherName",
-    className: "hidden md:table-cell",
-  },
-  {
-    headers: "Actions",
-    accessor: "actions",
-  },
-];
-
+  const baseColumns = [
+    {
+      headers: "Subject Name",
+      accessor: "name",
+    },
+    {
+      headers: "Teacher Name",
+      accessor: "Teachers",
+      className: "hidden md:table-cell",
+    },
+  ];
+const columns=(role==="admin" || role==="teacher")?[...baseColumns,{ headers: "Actions", accessor: "actions" }]:baseColumns
 const subjectRow = (item: SubjectType) => {
   return (
     <tr
@@ -43,12 +46,7 @@ const subjectRow = (item: SubjectType) => {
 
       <td>
         <div className="flex items-center gap-2">
-          {/* <Link href={`/list/teachers/${item.id}`} className="text-blue-500">
-            <button className="p-3 rounded-full flex items-center justify-center bg-abiSky w-7,h-7">
-              <Image src="/edit.png" alt="edit" width={16} height={16} />
-            </button>
-          </Link> */}
-          {role === "admin" && (
+          {(role === "admin" || role === "teacher") && (
             <>
             <FormModel table="subject" type="delete" data={item} id={item.id.toString()}/>
             <FormModel table="subject" type="update" data={item} />
@@ -59,11 +57,7 @@ const subjectRow = (item: SubjectType) => {
     </tr>
   );
 };
-const SubjectsListPage =async ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) => {
+
   const { page, ...queryParams } = await searchParams;
 
   const p = page ? parseInt(page as string) : 1;

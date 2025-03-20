@@ -125,4 +125,15 @@ User Metadata- Public - "role" : "admin"
 ## 15/03/2025
 [X] access the role from the current user and update the list page
 
+## 16/03/2025
+[x] role acces from clerk
+     const { sessionClaims } = await auth();
+     const role = (sessionClaims?.metadata as { role: string })?.role;
+
+## 20/03/2025
+[X] Role based access control (route protection)
+[X] Role base data fetching
+[X] Role based form access
+
+
 
