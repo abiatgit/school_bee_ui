@@ -3,75 +3,73 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import Image from "next/image";
 import React from "react";
-import { role } from "@/lib/data";
 import FormModel from "@/components/FormModel";
 import { Class, Lesson, Prisma, Subject, Teacher } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { PAGE_NUMBER, PAGE_SIZE } from "@/lib/settings";
-
+import { auth } from "@clerk/nextjs/server";
 type LessonType = Lesson & { teacher: Teacher } & { Subject: Subject } & {
   Class: Class;
 };
 
-const columns = [
-  {
-    headers: "Subject Name",
-    accessor: "subject",
-  },
-  {
-    headers: "Class",
-    accessor: "class",
-    className: "hidden sm:table-cell",
-  },
-  {
-    headers: "Teacher",
-    accessor: "teacher",
-    className: "",
-  },
-  {
-    headers: "Actions",
-    accessor: "actions",
-  },
-];
-
-const lessonRow = (item: LessonType) => {
-  return (
-    <tr
-      key={item.id}
-      className="boder-b border-gray-200 even:bg-slate-50 text-xs hover:bg-abiPurpleLight"
-    >
-      <td className="flex items-center gap-2 p-4">
-        <div className="flex flex-col">
-          <h3 className="text-sm font-semibold">{item.Subject.name}</h3>
-        </div>
-      </td>
-      <td className="">{item.Class.title}</td>
-      <td className="hidden md:table-cell">
-        {item.teacher.name + " " + item.teacher.surname}
-      </td>
-      <td>
-        <div className="flex items-center gap-2">
-          {role === "admin" && (
-            <>
-              <FormModel table="lesson" type="update" data={item} />
-              <FormModel
-                table="lesson"
-                type="delete"
-                data={item}
-                id={item.id.toString()}
-              />
-            </>
-          )}
-        </div>
-      </td>
-    </tr>
-  );
-};
 const LessonsListPage = async ({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
+  const { sessionClaims} = await auth();
+  const role = (sessionClaims?.metadata as { role: string })?.role;
+
+  const baseColumns = [
+    {
+      headers: "Subject Name",
+      accessor: "subject",
+    },
+    {
+      headers: "Class",
+      accessor: "class",
+      className: "hidden sm:table-cell",
+    },
+    {
+      headers: "Teacher",
+      accessor: "teacher",
+      className: "",
+    },
+  ];
+  const columns = role === "admin" || role === "teacher" ? [...baseColumns, { headers: "Actions", accessor: "actions" }] : baseColumns;
+  const lessonRow = (item: LessonType) => {
+    return (
+      <tr
+        key={item.id}
+        className="boder-b border-gray-200 even:bg-slate-50 text-xs hover:bg-abiPurpleLight"
+      >
+        <td className="flex items-center gap-2 p-4">
+          <div className="flex flex-col">
+            <h3 className="text-sm font-semibold">{item.Subject.name}</h3>
+          </div>
+        </td>
+        <td className="">{item.Class.title}</td>
+        <td className="hidden md:table-cell">
+          {item.teacher.name + " " + item.teacher.surname}
+        </td>
+        <td>
+          <div className="flex items-center gap-2">
+            {role === "admin" && (
+              <>
+                <FormModel table="lesson" type="update" data={item} />
+                <FormModel
+                  table="lesson"
+                  type="delete"
+                  data={item}
+                  id={item.id.toString()}
+                />
+              </>
+            )}
+          </div>
+        </td>
+      </tr>
+    );
+  };
   const { page, ...queryParams } = await searchParams;
   console.log(`query param ${queryParams.search}`);
   const p = page ? parseInt(page as string) : 1;
@@ -124,7 +122,7 @@ const LessonsListPage = async ({
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-abiYellow">
               <Image src="/sort.png" alt="add" width={14} height={14} />
             </button>
-            {role === "admin" && (
+            {(role === "admin" || role === "teacher") && (
               <>
                 <FormModel table="lesson" type="create" />
               </>

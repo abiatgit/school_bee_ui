@@ -3,92 +3,91 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import Image from "next/image";
 import React from "react";
-import { role} from "@/lib/data";
 import FormModel from "@/components/FormModel";
 import { Parent, Prisma, Student } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { PAGE_NUMBER, PAGE_SIZE } from "@/lib/settings";
+import { auth } from "@clerk/nextjs/server";
 
+type ParentList = Parent & { Students: Student[] };
 
-type ParentList= Parent & {Students:Student[]}
-
-const columns = [
-  {
-    headers: "Info",
-    accessor: "info",
-  },
-  {
-    headers: "Student Name",
-    accessor: "studentName",
-    className: "hidden md:table-cell",
-  },
-  {
-    headers: "Phone",
-    accessor: "phone",
-    className: "hidden md:table-cell",
-  },
-  {
-    headers: "Address",
-    accessor: "address",
-    className: "hidden lg:table-cell",
-  },
-
-  {
-    headers: "Actions",
-    accessor: "actions",
-  },
-];
-
-const parentRow = (item: ParentList) => {
-  return (
-    <tr
-      key={item.id}
-      className="boder-b border-gray-200 even:bg-slate-50 text-xs hover:bg-abiPurpleLight"
-    >
-      <td className="flex items-center gap-2 p-4">
-        <div className="flex flex-col">
-          <h3 className="text-sm font-semibold">{item.name}</h3>
-        </div>
-      </td>
-      <td className="hidden md:table-cell">{item.Students.map((student)=>student.name).join("")}</td>
-      <td className="hidden md:table-cell">{item.phone}</td>
-
-      <td className="hidden lg:table-cell">{item.address}</td>
-      <td>
-        <div className="flex items-center gap-2">
-          {role === "admin" ? (
-            <>
-              <FormModel
-                table="parent"
-                type="update"
-                data={item}
-                id={item.id.toString()}
-              />
-
-              <FormModel
-                table="parent"
-                type="delete"
-                data={item}
-                id={item.id.toString()}
-              />
-            </>
-          ) : null}
-        </div>
-      </td>
-    </tr>
-  );
-};
 const ParentsListPage = async ({
-  
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) => {
+  const { sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role: string })?.role;
+  const baseColumns = [
+    {
+      headers: "Info",
+      accessor: "info",
+    },
+    {
+      headers: "Student Name",
+      accessor: "studentName",
+      className: "hidden md:table-cell",
+    },
+    {
+      headers: "Phone",
+      accessor: "phone",
+      className: "hidden md:table-cell",
+    },
+    {
+      headers: "Address",
+      accessor: "address",
+      className: "hidden lg:table-cell",
+    },
+  ];
 
+  const columns =
+    role === "admin"
+      ? [...baseColumns, { headers: "Actions", accessor: "actions" }]
+      : baseColumns;
 
+  const parentRow = (item: ParentList) => {
+    return (
+      <tr
+        key={item.id}
+        className="boder-b border-gray-200 even:bg-slate-50 text-xs hover:bg-abiPurpleLight"
+      >
+        <td className="flex items-center gap-2 p-4">
+          <div className="flex flex-col">
+            <h3 className="text-sm font-semibold">{item.name}</h3>
+          </div>
+        </td>
+        <td className="hidden md:table-cell">
+          {item.Students.map((student) => student.name).join("")}
+        </td>
+        <td className="hidden md:table-cell">{item.phone}</td>
+
+        <td className="hidden lg:table-cell">{item.address}</td>
+        <td>
+          <div className="flex items-center gap-2">
+            {role === "admin" ? (
+              <>
+                <FormModel
+                  table="parent"
+                  type="update"
+                  data={item}
+                  id={item.id.toString()}
+                />
+
+                <FormModel
+                  table="parent"
+                  type="delete"
+                  data={item}
+                  id={item.id.toString()}
+                />
+              </>
+            ) : null}
+          </div>
+        </td>
+      </tr>
+    );
+  };
 
   const { page, ...queryParams } = await searchParams;
-
 
   const p = page ? parseInt(page as string) : 1;
 
@@ -108,12 +107,11 @@ const ParentsListPage = async ({
       }
     }
 
-
     const [data, count] = await prisma.$transaction([
       prisma.parent.findMany({
         where: query,
         include: {
-          Students:true
+          Students: true,
         },
         take: PAGE_SIZE,
         skip: (p - PAGE_NUMBER) * PAGE_SIZE,
