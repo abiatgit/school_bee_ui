@@ -16,30 +16,41 @@ const AdminPage = () => {
           <UserCard type="student"></UserCard>
           <UserCard type="teacher"></UserCard>
           <UserCard type="parent"></UserCard>
+<<<<<<< HEAD
           
+=======
+>>>>>>> af7d42c (feat:user-card-data-fetch)
         </div>
         {/* Middile chart */}
         <div className=" flex gap-4 flex-col lg:flex-row">
           {/* countChart */}
           <div className="w-full lg:w-1/3 h-[450px]">
+<<<<<<< HEAD
           <CountChartContainer/>
           
           </div>
           {/* attendanceChart */}
           <div className="w-full lg:w-2/3 h-[450px] ">
             <AttendanceChartContainer/>
+=======
+            <CountChart></CountChart>
+          </div>
+          {/* attendanceChart */}
+          <div className="w-full lg:w-2/3 h-[450px] ">
+            <AttendanceChart />
+>>>>>>> af7d42c (feat:user-card-data-fetch)
           </div>
         </div>
         {/* Bottom chart */}
         <div className="w-full h-[500px]">
-          <FinanceChart/>
+          <FinanceChart />
         </div>
       </div>
-   
+
       {/* Right */}
       <div className="w-full lg:w-1/3 flex flex-col gap-8">
         <EventCalender />
-        <Announcements/>
+        <Announcements />
       </div>
     </div>
   );

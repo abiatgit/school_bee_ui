@@ -2,20 +2,31 @@ import React from 'react'
 import Image from 'next/image'
 import prisma from '@/lib/prisma'
 
+<<<<<<< HEAD
 type ModelDelegate = {
   count: (args?: object) => Promise<number>
 }
 
 const UserCard = async ({type}:{type:"admin"|"student"|"teacher"|"parent"}) => {
   const modelMap: Record<string, ModelDelegate> = {
+=======
+const UserCard = async ({type}:{type:"admin"|"student"| "teacher"| "parent"}) => {
+  const objectMap={
+>>>>>>> af7d42c (feat:user-card-data-fetch)
     admin: prisma.admin,
     student: prisma.student,
     teacher: prisma.teacher,
     parent: prisma.parent
   }
+<<<<<<< HEAD
 
   const data= await modelMap[type].count({})
   console.log(data)
+=======
+  const data = await objectMap[type].count()
+  console.log(`data: ${data}`)
+ 
+>>>>>>> af7d42c (feat:user-card-data-fetch)
 
   return (
     <div className='rounded-2xl odd:bg-abiPurple even:bg-abiYellow p-4  flex-1 min-w-[130px]'>
