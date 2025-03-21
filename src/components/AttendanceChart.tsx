@@ -9,7 +9,14 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-
+// const data = [
+//   { name: "Mon", present: 10, absent: 2 },
+//   { name: "Tue", present: 15, absent: 3 },
+//   { name: "Wed", present: 8, absent: 1 },
+//   { name: "Thu", present: 12, absent: 4 },
+//   { name: "Fri", present: 18, absent: 2 },
+ 
+// ];
 const AttendanceChart = ({
   data,
 }: {

@@ -8,6 +8,7 @@ const Announcements = () => {
         <span className="text-xs text-gray-500">View all</span>
       </div>
       <div className="flex flex-col gap-4 mt-4">
+        
         <div className="bg-abiSkyLight rounded-md p-4">
           <div className="flex justify-between items-center">
             <h2 className="text-lg font-medium">
