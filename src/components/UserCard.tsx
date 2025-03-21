@@ -2,40 +2,42 @@ import React from 'react'
 import Image from 'next/image'
 import prisma from '@/lib/prisma'
 
-<<<<<<< HEAD
 type ModelDelegate = {
   count: (args?: object) => Promise<number>
 }
 
-const UserCard = async ({type}:{type:"admin"|"student"|"teacher"|"parent"}) => {
-  const modelMap: Record<string, ModelDelegate> = {
-=======
-const UserCard = async ({type}:{type:"admin"|"student"| "teacher"| "parent"}) => {
-  const objectMap={
->>>>>>> af7d42c (feat:user-card-data-fetch)
+type UserType = "admin" | "student" | "teacher" | "parent"
+
+const UserCard = async ({ type }: { type: UserType }) => {
+  const modelMap: Record<UserType, ModelDelegate> = {
     admin: prisma.admin,
     student: prisma.student,
     teacher: prisma.teacher,
     parent: prisma.parent
   }
-<<<<<<< HEAD
 
-  const data= await modelMap[type].count({})
-  console.log(data)
-=======
-  const data = await objectMap[type].count()
+  const data = await modelMap[type].count({})
 
- 
->>>>>>> af7d42c (feat:user-card-data-fetch)
+  const getCardColor = () => {
+    switch(type) {
+      case 'admin': return 'bg-abiPurple hover:bg-abiPurpleLight';
+      case 'student': return 'bg-abiYellow hover:bg-abiYellowLight';
+      case 'teacher': return 'bg-abiSky hover:bg-abiSkyLight';
+      case 'parent': return 'bg-abiPurple hover:bg-abiPurpleLight';
+      default: return 'bg-gray-100 hover:bg-gray-200';
+    }
+  }
 
   return (
-    <div className='rounded-2xl odd:bg-abiPurple even:bg-abiYellow p-4  flex-1 min-w-[130px]'>
-    <div className='flex justify-between items-center'>
-        <span className='text-[10-px] bg-white px-2 py-1 rounded-full text-green-600'>2024/25</span>
-        <Image src="/more.png" alt="" width={20} height={20}></Image>
-    </div>
-    <h1 className='text-2xl font-semibold my-4'>{data}</h1>
-    <h2 className='capitalize text-sm font-medium text-gray-500'>{type}s</h2>
+    <div className={`rounded-2xl ${getCardColor()} p-4 flex-1 min-w-[130px] transition-colors duration-200 shadow-sm hover:shadow-md`}>
+      <div className='flex justify-between items-center'>
+        <span className='text-[10px] bg-white px-2 py-1 rounded-full text-green-600 font-medium'>2024/25</span>
+        <button className='hover:opacity-75 transition-opacity'>
+          <Image src="/more.png" alt="more options" width={20} height={20} className='w-5 h-5' />
+        </button>
+      </div>
+      <h1 className='text-2xl font-semibold my-4'>{data}</h1>
+      <h2 className='capitalize text-sm font-medium text-gray-600'>{type}s</h2>
     </div>
   )
 }
