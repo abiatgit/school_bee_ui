@@ -1,10 +1,10 @@
-import CountChart from "@/components/CountChart";
+import CountChartContainer from "@/components/CountChartContainer";
 import UserCard from "@/components/UserCard";
 import React from "react";
-import AttendanceChart from "@/components/AttendanceChart";
 import FinanceChart from "@/components/FinanceChart";
 import EventCalender from "@/components/EventCalender";
 import Announcements from "@/components/Announcements";
+import AttendanceChartContainer from "@/components/AttendanceChartContainer";
 const AdminPage = () => {
   return (
     <div className="p-4 flex gap-4 flex-col md:flex-row">
@@ -22,12 +22,12 @@ const AdminPage = () => {
         <div className=" flex gap-4 flex-col lg:flex-row">
           {/* countChart */}
           <div className="w-full lg:w-1/3 h-[450px]">
-          <CountChart></CountChart>
+          <CountChartContainer/>
           
           </div>
           {/* attendanceChart */}
           <div className="w-full lg:w-2/3 h-[450px] ">
-            <AttendanceChart/>
+            <AttendanceChartContainer/>
           </div>
         </div>
         {/* Bottom chart */}

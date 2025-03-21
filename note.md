@@ -134,6 +134,8 @@ User Metadata- Public - "role" : "admin"
 [X] Role based access control (route protection)
 [X] Role base data fetching
 [X] Role based form access
+[X] fetch data for count chart
+
 
 
 

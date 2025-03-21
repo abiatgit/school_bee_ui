@@ -22,7 +22,7 @@ const AnnouncementsListPage = async ({
 }) => {
   const { sessionClaims ,userId} = await auth();
 const role = (sessionClaims?.metadata as { role: string })?.role;
-console.log(`role: ${role}`);
+
   const baseColumns = [
     {
       headers: "Title",
@@ -43,7 +43,7 @@ console.log(`role: ${role}`);
     ? [...baseColumns, { headers: "Actions", accessor: "actions" }]
     : baseColumns;
   const announcementRow = (item: AnnouncementType) => {
-    console.log(`item: ${JSON.stringify(item)}`);
+   
     return (
       <tr
         key={item.id}
@@ -72,7 +72,7 @@ console.log(`role: ${role}`);
     );
   };
   const { page, ...queryParams } = await searchParams;
-  console.log(`queryParams: ${JSON.stringify(queryParams)}`);
+
   const p = page ? parseInt(page as string) : 1;
   // URL PARAM CONVERSION
   const query: Prisma.AnnouncementWhereInput = {};
