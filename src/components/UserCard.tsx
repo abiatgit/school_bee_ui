@@ -24,7 +24,7 @@ const UserCard = async ({type}:{type:"admin"|"student"| "teacher"| "parent"}) =>
   console.log(data)
 =======
   const data = await objectMap[type].count()
-  console.log(`data: ${data}`)
+
  
 >>>>>>> af7d42c (feat:user-card-data-fetch)
 
