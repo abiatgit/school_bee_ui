@@ -1,9 +1,25 @@
 import AnnouncementsContainer from '@/components/AnnouncementsContainer'
-import BigCalender from '@/components/BigCalender'
+
+import BigCalenderContainer from '@/components/BigCalenderContainer'
 import EventCalender from '@/components/EventCalender'
+import prisma from '@/lib/prisma'
+import { auth } from '@clerk/nextjs/server'
 import React from 'react'
 
-const StudentPage = () => {
+const StudentPage =async () => {
+   const {userId} = await auth();
+   console.log("Student page userid", userId);
+   const data = await prisma.class.findFirst({
+    where: {
+      students: {
+        some: {
+          id: userId!
+        }
+      }
+    },
+   });
+   console.log('data form student page',data)
+
   return (
     <div className='p-4 flex flex-col gap-4 xl:flex-row'>
       {/* <LeftSidebar /> */}
@@ -12,7 +28,7 @@ const StudentPage = () => {
         <h1 className='text-2xl font-semibold'>
           Schedule (4A)
         </h1>
-        <BigCalender/>
+        <BigCalenderContainer type='classID' id={data?.id}/>
       </div>
       </div>
 

@@ -23,7 +23,7 @@ const BigCalenderContainer = async ({
     end: lesson.endTime
   }));
 
-  console.log("Big Calander", data);
+
   return (
     <div>
       <BigCalender data={data}></BigCalender>

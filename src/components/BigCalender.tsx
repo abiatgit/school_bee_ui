@@ -4,6 +4,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import globalize from "globalize";
 const localizer = globalizeLocalizer(globalize);
 import { useState } from "react";
+import { adjuestSheduletoCurrentWeek } from "@/lib/utils";
 
 const BigCalender = ({data}:{data:{title:string,start:Date,end:Date}[]}) => {
   const [view, setView] = useState<View>(Views.WORK_WEEK);
@@ -11,10 +12,11 @@ const BigCalender = ({data}:{data:{title:string,start:Date,end:Date}[]}) => {
     setView(view);
   }
 
+  const schedule=adjuestSheduletoCurrentWeek(data)
   return (
     <Calendar
       localizer={localizer}
-      events={data}
+      events={schedule}
       startAccessor="start"
       endAccessor="end"
       view={view}
