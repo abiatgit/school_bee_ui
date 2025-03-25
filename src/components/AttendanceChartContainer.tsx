@@ -59,7 +59,7 @@ const AttendanceChartContainer = async () => {
     present: attendanceMap[day].present,
     absent: attendanceMap[day].absent,
   }));
-console.log(`DATA ${JSON.stringify(data)}`)
+
   return (
     <div className="bg-white rounded-lg p-4 h-full">
       <div className="flex justify-between items-center">

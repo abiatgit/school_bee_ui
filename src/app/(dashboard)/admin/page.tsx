@@ -3,8 +3,8 @@ import CountChartContainer from "@/components/CountChartContainer";
 import UserCard from "@/components/UserCard";
 import AttendanceChartContainer from "@/components/AttendanceChartContainer";
 import FinanceChart from "@/components/FinanceChart";
-import Announcements from "@/components/Announcements";
 import EventCalenderContainer from "@/components/EventCalenderContainer";
+import AnnouncementsContainer from "@/components/AnnouncementsContainer";
 
 type AdminPageProps = {
   searchParams: { date?: string }
@@ -42,7 +42,7 @@ const AdminPage = async ({ searchParams }: AdminPageProps) => {
       {/* Right */}
       <div className="w-full lg:w-1/3 flex flex-col gap-8">
         <EventCalenderContainer date={searchParams.date} />
-        <Announcements />
+        <AnnouncementsContainer />
       </div>
     </div>
   );
