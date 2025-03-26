@@ -1,13 +1,16 @@
 "use client";
-import React from "react";
+import React, { startTransition, useActionState, useEffect } from "react";
 import Image from "next/image";
 import { useState } from "react";
 // import TeacherForm from "./forms/TeacherForm";
 // import StudentForm from "./forms/StudentForm";
 import dynamic from "next/dynamic";
+import { deleteSubject } from "@/lib/serverAction";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const TeacherForm = dynamic(() => import("./forms/TeacherForm"), {
- loading: () => <div>Loading...</div>,
+  loading: () => <div>Loading...</div>,
 });
 const ParentForm = dynamic(() => import("./forms/ParentForm"), {
   loading: () => <div>Loading...</div>,
@@ -46,7 +49,13 @@ const EventForm = dynamic(() => import("./forms/EventForm"), {
   loading: () => <div>Loading...</div>,
 });
 
-const forms: { [key: string]: (type: "create" | "update", data?: any) => React.ReactElement; } = {
+const forms: {
+  [key: string]: (
+    type: "create" | "update",
+    data?: any,
+    setOpen?: (state: boolean) => void
+  ) => React.ReactElement;
+} = {
   teacher: (type, data) => <TeacherForm type={type} data={data} />,
   student: (type, data) => <StudentForm type={type} data={data} />,
   parent: (type, data) => <ParentForm type={type} data={data} />,
@@ -58,15 +67,30 @@ const forms: { [key: string]: (type: "create" | "update", data?: any) => React.R
   exam: (type, data) => <ExamForm type={type} data={data} />,
   assignment: (type, data) => <AssignmentForm type={type} data={data} />,
   result: (type, data) => <ResultForm type={type} data={data} />,
-  subject: (type, data) => <SubjectForm type={type} data={data} />,
+  subject: (type, data, setOpen) => (
+    <SubjectForm type={type} data={data} setOpen={setOpen!} />
+  ),
   event: (type, data) => <EventForm type={type} data={data} />,
 };
 
 interface FormModelProps {
-  table: Exclude<keyof FormData, symbol>  | "parent" | "subject" | "class" | "lesson" | "exam" |"assignment" | "attendance" | "result" | "event"|"student" | "teacher" | "announcement";
-  type: "create" | "update" | "delete" | "parent"
+  table:
+    | Exclude<keyof FormData, symbol>
+    | "parent"
+    | "subject"
+    | "class"
+    | "lesson"
+    | "exam"
+    | "assignment"
+    | "attendance"
+    | "result"
+    | "event"
+    | "student"
+    | "teacher"
+    | "announcement";
+  type: "create" | "update" | "delete" | "parent";
   data?: Partial<FormData[keyof FormData]>;
-  id?: string | number
+  id?: string | number;
 }
 
 const FormModel = ({ table, type, data, id }: FormModelProps) => {
@@ -85,10 +109,31 @@ const FormModel = ({ table, type, data, id }: FormModelProps) => {
     setOpen(false);
   };
   const From = () => {
+    const router = useRouter();
+
+    const [state, formAction] = useActionState(deleteSubject, {
+      success: false,
+      error: false,
+    });
+    useEffect(() => {
+      if (state.success) {
+        setOpen(false);
+        router.refresh();
+        toast.success(`Subject Has been Deleted`, { toastId: "success" });
+      }
+      if (state.error) {
+        toast.error("Failed to Delete subject.", { toastId: "error" });
+      }
+    }, [state.success, state.error]);
     return type === "delete" && id ? (
-      <form action={""} className="flex flex-col gap-4 p-4">
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        startTransition(() => {
+          formAction({ id: id.toString(), name: (data as { name: string })?.name || '' });
+        });
+      }} className="flex flex-col gap-4 p-4">
         <span className="text-center text-lg font-medium">
-          Are you sure you want to delete this {}?
+          Are you sure you want to delete this subject?
         </span>
         <button
           type="submit"
@@ -97,8 +142,8 @@ const FormModel = ({ table, type, data, id }: FormModelProps) => {
           Delete
         </button>
       </form>
-    ) :type === "update" || type === "create" ? (
-      forms[table](type, data)
+    ) : type === "update" || type === "create" ? (
+      forms[table](type, data, setOpen)
     ) : null;
   };
   return (

@@ -144,6 +144,9 @@ User Metadata- Public - "role" : "admin"
  [X] Subject form submit (Server aciton)
  [X] Revalidate (once the severaction done/we can revalidate our path to see teh updated data)
 
+ ## 26/03/2025
+ [X] const [state, formAction, pending] = useActionState(createUser, initialState)
+
 
 
 

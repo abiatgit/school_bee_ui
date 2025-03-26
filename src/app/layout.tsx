@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 const inter = Inter({ subsets: ["latin"] });
+import { ToastContainer} from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css"; 
 
 
 
@@ -20,7 +22,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <ClerkProvider>
-        <body className={inter.className}>{children}</body>
+        <body className={inter.className}>{children }<ToastContainer/></body>
       </ClerkProvider>
     </html>
   );
