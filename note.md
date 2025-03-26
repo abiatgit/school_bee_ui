@@ -136,6 +136,14 @@ User Metadata- Public - "role" : "admin"
 [X] Role based form access
 [X] fetch data for count chart
 
+## 25/03/2025
+ [X] fetch data from announcemet 
+ [X] fetch data for events
+ [X] detch data for subject calander 
+ [X] all pages done(Admin,parent,teacher,student)
+ [X] Subject form submit (Server aciton)
+ [X] Revalidate (once the severaction done/we can revalidate our path to see teh updated data)
+
 
 
 

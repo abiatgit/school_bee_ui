@@ -3,35 +3,16 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputField from "../InputField";
+import { createSubject } from "@/lib/serverAction";
 
-
-const schema = z.object({
-  subjectName: z
+export const subjectSchema = z.object({
+  subject: z
     .string()
     .min(2, { message: "Subject name must be at least 2 characters" })
     .max(50, { message: "Subject name must be less than 50 characters" }),
-  subjectCode: z
-    .string()
-    .min(2, { message: "Subject code must be at least 2 characters" })
-    .max(10, { message: "Subject code must be less than 10 characters" }),
-  description: z
-    .string()
-    .max(500, { message: "Description must be less than 500 characters" })
-    .optional(),
-  credits: z
-    .number()
-    .min(1, { message: "Credits must be at least 1" })
-    .max(10, { message: "Credits must be less than 10" }),
-  department: z
-    .string()
-    .min(2, { message: "Department is required" }),
-  semester: z
-    .number()
-    .min(1, { message: "Semester must be at least 1" })
-    .max(8, { message: "Semester must be less than 8" })
 });
 
-type SubjectFormData = z.infer<typeof schema>;
+type SubjectFormData = z.infer<typeof subjectSchema>;
 
 export default function SubjectForm({
   type,
@@ -42,80 +23,30 @@ export default function SubjectForm({
 }) {
   const {
     register,
-    handleSubmit,
     formState: { errors },
   } = useForm<SubjectFormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(subjectSchema),
   });
 
-  const onSubmit = handleSubmit((data: SubjectFormData) => {
-    console.log(data);
-  });
+
 
   return (
     <form
-      onSubmit={onSubmit}
+      action={ createSubject}
       className="flex flex-col gap-4 w-full max-w-4xl p-4"
     >
+      <h1 className="text-2xl">
+        {type === "create" ? "Create a subject" : "Update a subject"}
+      </h1>
       <div className="flex justify-between flex-wrap gap-4">
         <InputField<SubjectFormData>
           label="Subject Name"
-          name="subjectName"
+          name="subject"
           register={register}
           error={errors}
           placeholder="Enter subject name"
           type="text"
-          defaultValue={data?.subjectName}
-        />
-
-        <InputField<SubjectFormData>
-          label="Subject Code"
-          name="subjectCode"
-          register={register}
-          error={errors}
-          placeholder="Enter subject code"
-          type="text"
-          defaultValue={data?.subjectCode}
-        />
-
-        <InputField<SubjectFormData>
-          label="Credits"
-          name="credits"
-          register={register}
-          error={errors}
-          placeholder="Enter credits"
-          type="number"
-          defaultValue={data?.credits?.toString()}
-        />
-
-        <InputField<SubjectFormData>
-          label="Department"
-          name="department"
-          register={register}
-          error={errors}
-          placeholder="Enter department"
-          type="text"
-          defaultValue={data?.department}
-        />
-
-        <InputField<SubjectFormData>
-          label="Semester"
-          name="semester"
-          register={register}
-          error={errors}
-          placeholder="Enter semester"
-          type="number"
-          defaultValue={data?.semester?.toString()}
-        />
-
-        <InputField<SubjectFormData>
-          label="Description"
-          name="description"
-          register={register}
-          error={errors}
-          placeholder="Enter description"
-          type="textarea"
-          defaultValue={data?.description}
+          defaultValue={data?.subject}
         />
       </div>
 
