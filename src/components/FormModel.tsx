@@ -9,6 +9,21 @@ import { deleteSubject } from "@/lib/serverAction";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
+const deleteActionMap = {
+  subject: deleteSubject,
+  // class: deleteClass,
+  // teacher: deleteTacher,
+  // parent: deleteParent,
+  // announcement: deleteAnnouncement,
+  // event: deleteEvent,
+  // lesson: deleteLesson,
+  // result: deleteResult,
+  // student: deleteTeacher,
+  // exam: deleteExam,
+  // assignment: deleteAssignment,
+  // attendance: deleteAttendance,
+};
+
 const TeacherForm = dynamic(() => import("./forms/TeacherForm"), {
   loading: () => <div>Loading...</div>,
 });
@@ -110,8 +125,8 @@ const FormModel = ({ table, type, data, id }: FormModelProps) => {
   };
   const From = () => {
     const router = useRouter();
-
-    const [state, formAction] = useActionState(deleteSubject, {
+    const deleteAction = deleteActionMap[table as keyof typeof deleteActionMap];
+    const [state, formAction] = useActionState(deleteAction, {
       success: false,
       error: false,
     });
@@ -126,12 +141,15 @@ const FormModel = ({ table, type, data, id }: FormModelProps) => {
       }
     }, [state.success, state.error]);
     return type === "delete" && id ? (
-      <form onSubmit={(e) => {
-        e.preventDefault();
-        startTransition(() => {
-          formAction({ id: id.toString(), name: (data as { name: string })?.name || '' });
-        });
-      }} className="flex flex-col gap-4 p-4">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          startTransition(() => {
+            formAction({ id: id.toString()});
+          });
+        }}
+        className="flex flex-col gap-4 p-4"
+      >
         <span className="text-center text-lg font-medium">
           Are you sure you want to delete this subject?
         </span>

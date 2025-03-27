@@ -36,18 +36,20 @@ export const updateSubject = async (state: { success: boolean; error: boolean },
     }
   };
   
-export const deleteSubject = async (state: { success: boolean; error: boolean }, formData: { id: string; name: string }) => {
-  console.log("i'm called",state,formData)
+export const deleteSubject = async (state: { success: boolean; error: boolean }, formData: { id: string }) => {
+console.log(formData.id)
   try {
-    await prisma.subject.delete({
+    // First check if subject exists
+    const subject = await prisma.subject.delete({
       where: {
         id: parseInt(formData.id)
       }
     });
-    revalidatePath("/list/subjects");
+    console.log(subject)
     return { success: true, error: false };
+
   } catch (err) {
-    console.log(err);
+    console.log("Delete error:", err);
     return { success: false, error: true };
   }
 };
