@@ -1,5 +1,5 @@
 import Announcements from "@/components/Announcements";
-import BigCalender from "@/components/BigCalender";
+import BigCalenderContainer from "@/components/BigCalenderContainer";
 import FormModel from "@/components/FormModel";
 import Performence from "@/components/Performence";
 import Image from "next/image";
@@ -153,7 +153,7 @@ const SingleTeacherPage = () => {
         {/* bottom */}
         <div className="mt-4 bg-white rounded-md p-4 h-[800px]">
           <h1>Teeacher&rsquo; Schedule</h1>
-          <BigCalender />
+          <BigCalenderContainer />
         </div>
       </div>
       {/* right */}

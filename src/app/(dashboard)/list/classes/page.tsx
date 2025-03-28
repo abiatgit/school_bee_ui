@@ -3,11 +3,11 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import Image from "next/image";
 import React from "react";
-import FormModel from "@/components/FormModel";
 import { Class, Prisma, Teacher } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { PAGE_NUMBER, PAGE_SIZE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
+import FormContainer from "@/components/FormContainer";
 
 type ClassType = Class & { superVisor: Teacher };
 
@@ -60,8 +60,8 @@ const ClassesListPage = async ({
           <div className="flex items-center gap-2">
             {role === "admin" && (
               <>
-                <FormModel table="class" type="update" data={item} />
-                <FormModel
+                <FormContainer table="class" type="update" data={item} />
+                <FormContainer
                   table="class"
                   type="delete"
                   data={item}
@@ -126,7 +126,7 @@ const ClassesListPage = async ({
               <button className="w-8 h-8 flex items-center justify-center rounded-full bg-abiYellow">
                 <Image src="/sort.png" alt="add" width={14} height={14} />
               </button>
-              {role === "admin" && <FormModel table="class" type="create" />}
+              {role === "admin" && <FormContainer table="class" type="create" />}
             </div>
           </div>
         </div>

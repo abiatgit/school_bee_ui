@@ -8,6 +8,7 @@ import { Prisma, Subject ,Teacher} from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { PAGE_NUMBER, PAGE_SIZE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
+import FormContainer from "@/components/FormContainer";
 
 type SubjectType =Subject & {Teachers:Teacher[]}
 
@@ -48,8 +49,8 @@ const subjectRow = (item: SubjectType) => {
         <div className="flex items-center gap-2">
           {(role === "admin" || role === "teacher") && (
             <>
-            <FormModel table="subject" type="delete" data={item} id={item.id.toString()}/>
-            <FormModel table="subject" type="update" data={item} />
+            <FormContainer table="subject" type="delete" data={item} id={item.id.toString()}/>
+            <FormContainer table="subject" type="update" data={item} />
             </>
           )}
         </div>

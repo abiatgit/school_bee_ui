@@ -9,6 +9,7 @@ import { Teacher, Subject, Class, Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { PAGE_NUMBER, PAGE_SIZE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
+import FormContainer from "@/components/FormContainer";
 
 type TeacherList = Teacher & { subjects: Subject[]; classes: Class[] };
 
@@ -89,7 +90,7 @@ const TeachersListPage = async ({
               </button>
             </Link>
             {role === "admin" && (
-              <FormModel
+              <FormContainer
                 table="teacher"
                 type="delete"
                 data={item}
@@ -163,7 +164,7 @@ const TeachersListPage = async ({
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-abiYellow">
               <Image src="/sort.png" alt="add" width={14} height={14} />
             </button>
-            {role === "admin" && <FormModel table="teacher" type="create" />}
+            {role === "admin" && <FormContainer table="teacher" type="create" />}
           </div>
         </div>
       </div>
