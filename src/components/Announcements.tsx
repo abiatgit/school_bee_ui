@@ -11,8 +11,6 @@ interface AnnouncementProp {
 }
 
 const Announcements = ({ data }: AnnouncementProp) => {
-
-
   return (
     <div className="space-y-4">
       {data.map((item, index) => (

@@ -4,40 +4,52 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputField from "../InputField";
 import Image from "next/image";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, startTransition, useActionState, useEffect, useState } from "react";
+import { createTeacher, updateTeacher } from "@/lib/serverAction";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { CldUploadWidget } from "next-cloudinary";
 
 export const Teacherschema = z.object({
   id: z.string().optional(),
   username: z
     .string()
-    .min(3, { message: "Username  must be 3 characters" })
-    .max(20, { message: "Username  must be 20 characters" }),
+    .min(3, { message: "Username must be at least 3 characters" })
+    .max(20, { message: "Username must be at most 20 characters" }),
   name: z
     .string()
-    .min(1, { message: "First name must be 1 characters" })
-    .max(20, { message: "First name must be 20 characters" }),
+    .min(1, { message: "Name must be at least 1 character" })
+    .max(20, { message: "Name must be at most 20 characters" }),
   surname: z
     .string()
-    .min(1, { message: "Last name must be 1 characters" })
-    .max(20, { message: "Last name must be 20 characters" }),
-  email: z.string().email({ message: "Invalid email address" }),
+    .min(1, { message: "Surname must be at least 1 character" })
+    .max(20, { message: "Surname must be at most 20 characters" }),
+  email: z.string().email({ message: "Invalid email address" }).nullable().optional(),
+  password:z.string().optional(),
   phone: z
     .string()
-    .min(10, { message: "Phone must be 10 characters" })
-    .max(15, { message: "Phone must be 15 characters" }),
-  password: z.string().min(8, { message: "Password must be 8 characters" }),
-  image: z.instanceof(File, { message: "Image is required" }).optional(),
+    .min(10, { message: "Phone number must be at least 10 characters" })
+    .max(15, { message: "Phone number must be at most 15 characters" })
+    .nullable()
+    .optional(),
+  image: z.string().optional(),
+  bloodGroup: z.string().min(1, { message: "Blood group is required" }),
+  gender: z.enum(["male", "female", "other"], { message: "Invalid gender" }),
   address: z
     .string()
-    .min(3, { message: "Address must be 3 characters" })
-    .max(50, { message: "Address must be 50 characters" }),
-  gender: z.enum(["male", "female", "other"], { message: "Invalid gender" }),
-  birthDate: z.union([z.string(), z.date()]),
-  bloodGroup: z.string().min(1, { message: "Blood group is required" }),
+    .min(3, { message: "Address must be at least 3 characters" })
+    .max(50, { message: "Address must be at most 50 characters" }),
+  createdAt: z.date().optional(),
+  subjects: z.array(z.string()).optional(),
   lessons: z.array(z.object({ id: z.string() })).optional(),
   classes: z.array(z.object({ id: z.string() })).optional(),
 });
 
+const initialState = {
+  success: false,
+  error: false,
+};
 type TeacherFormData = z.infer<typeof Teacherschema>;
 export default function TeacherForm({
   type,
@@ -58,18 +70,54 @@ export default function TeacherForm({
     resolver: zodResolver(Teacherschema),
   });
 
-  
-  const onSubmit = handleSubmit((data: TeacherFormData) => {
-    console.log(data);
-  });
+const [img,setImg]=useState<any>()
+  const router = useRouter();
+  const [state, formAction, pending] = useActionState(
+    (state: { success: boolean; error: boolean }, formData: TeacherFormData) => 
+      type === "create" ? createTeacher(state, formData) : updateTeacher(state, formData),
+    initialState
+  );
+const {subjects}=relatedData
+  useEffect(() => {
+    if (state.success) {
+      setOpen(false);
+      router.refresh();
+      toast.success(
+        `Teacher Has been${type === "create" ? "Created" : "Updated"}`,
+        { toastId: "success" }
+      );
+    }
+    if (state.error) {
+      toast.error("Failed to create subject.", { toastId: "error" });
+    }
+  }, [state.success, state.error]);
+
+  const onSubmit = (formData: TeacherFormData) => {
+    console.log('Form submitted with data:', formData);
+    if (Object.keys(errors).length > 0) {
+      console.log('Validation errors:', errors);
+      return;
+    }
+    startTransition(() => {
+      formData.image = img?.secure_url;
+      // Transform subjects array to match schema
+      if (formData.subjects) {
+        formData.subjects = Array.isArray(formData.subjects) 
+          ? formData.subjects
+          : [formData.subjects];
+      }
+      console.log("Form data:", formData);
+      console.log("Form type:", type);
+      formAction(formData);
+    });
+  };
   return (
-    <form className="flex flex-col gap-8 " onSubmit={onSubmit}>
+    <form className="flex flex-col gap-8" onSubmit={handleSubmit(onSubmit, (errors) => {
+      console.log('Form validation errors:', errors);
+    })} noValidate>
       <h1 className="text-2xl font-bold">
         {type === "create" ? "Create a Teacher" : "Update a Teacher"}
       </h1>
-      <span className="text-sm text-gray-500 font-medium">
-        Authentication Information
-      </span>
       <div className="flex justify-between flex-wrap gap-4">
         <InputField<TeacherFormData>
           label="Username"
@@ -80,7 +128,15 @@ export default function TeacherForm({
           type="text"
           defaultValue={data?.username}
         />
-
+         <InputField<TeacherFormData>
+          label="password"
+          name="password"
+          register={register}
+          error={errors}
+          placeholder="Password"
+          type="text"
+          
+        />
         <InputField<TeacherFormData>
           label="Email"
           name="email"
@@ -88,36 +144,27 @@ export default function TeacherForm({
           error={errors}
           placeholder="Email"
           type="email"
-          defaultValue={data?.email}
-        />
-        <InputField<TeacherFormData>
-          label="Password"
-          name="password"
-          register={register}
-          error={errors}
-          placeholder="Password"
-          type="password"
-          defaultValue={data?.password}
+          defaultValue={data?.email || ""}
         />
       </div>
       <div className="flex justify-between flex-wrap gap-4">
         <InputField<TeacherFormData>
           label="First Name"
-          name="firstName"
+          name="name"
           register={register}
           error={errors}
           placeholder="First Name"
           type="text"
-          defaultValue={data?.firstName}
+          defaultValue={data?.name}
         />
         <InputField<TeacherFormData>
           label="Last Name"
-          name="lastName"
+          name="surname"
           register={register}
           error={errors}
           placeholder="Last Name"
           type="text"
-          defaultValue={data?.lastName}
+          defaultValue={data?.surname}
         />
         <InputField<TeacherFormData>
           label="Phone"
@@ -126,7 +173,7 @@ export default function TeacherForm({
           error={errors}
           placeholder="Phone"
           type="text"
-          defaultValue={data?.phone}
+          defaultValue={data?.phone || ""}
         />
       </div>
       <div className="flex justify-between flex-wrap gap-4">
@@ -148,26 +195,17 @@ export default function TeacherForm({
           type="text"
           defaultValue={data?.bloodGroup}
         />
-        <InputField<TeacherFormData>
-          label="Birth Date"
-          name="birthDate"
-          register={register}
-          error={errors}
-          placeholder="Birth Date"
-          type="date"
-          defaultValue={data?.birthDate?.toString()}
-        />
       </div>
       <div className="flex justify-between flex-wrap gap-4">
         <div className="flex flex-col gap-2 w-ful md:w-1/4">
-          <label>{"Gender"}</label>
+          <label>Gender</label>
           <select
             {...register("gender")}
             className="ring-[1.5px] ring-gray-300 rounded-md p-2"
             defaultValue={data?.gender}
           >
-            <option value="male">Male</option>
-            <option value="female">Female</option>
+            <option value="Male">MALE</option>
+            <option value="female">FEMALE</option>
             <option value="other">Other</option>
           </select>
           {errors?.gender?.message && (
@@ -176,29 +214,46 @@ export default function TeacherForm({
             </p>
           )}
         </div>
-
+      </div>
+      <div className="flex justify-between flex-wrap gap-4">
         <div className="flex flex-col gap-2 w-ful md:w-1/4">
-          <label
-            className="text-sm font-medium text-gray-500 gap-2 cursor-pointer"
-            htmlFor="img"
+          <label>Subject</label>
+          <select
+            multiple
+            {...register("subjects")}
+            className="ring-[1.5px] ring-gray-300 rounded-md p-2"
+            defaultValue={data?.subjects} 
           >
-            <Image src="/upload.png" alt="upload" width={28} height={28} />
-            <span>Upload Image</span>
-          </label>
-          <input
-            id="img"
-            type="file"
-            {...register("image")}
-            className="hidden"
-            accept="image/*"
-          />
-          {errors?.image?.message && (
+            {subjects?.map((subject: {id: number, name: string}) => (
+              <option value={subject.id} key={subject.id}>{subject.name}</option>
+            ))}
+          </select>
+          {errors?.subjects?.message && (
             <p className="text-red-500 text-xs">
-              {errors?.image?.message as string}
+              {errors?.subjects?.message as string}
             </p>
           )}
         </div>
+
+      
+        <CldUploadWidget uploadPreset="schoolbee" onSuccess={(result, widget) => {
+          setImg(result.info);
+          widget.close();
+        }}>
+          {({ open }) => (
+            <div
+              className="text-sm font-medium text-gray-500 gap-2 cursor-pointer"
+              onClick={() => open()}
+            >
+              <Image src="/upload.png" alt="upload" width={28} height={28} />
+              <span>Upload Image</span>
+            </div>
+          )}
+        </CldUploadWidget>
+
+
       </div>
+
       <button
         type="submit"
         className="bg-blue-500 text-white py-2 px-4 rounded-md border-none w-max self-center"

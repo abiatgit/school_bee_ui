@@ -8,6 +8,7 @@ import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { Teacher } from "@prisma/client";
+import { CldUploadWidget } from 'next-cloudinary';
 
 export const subjectSchema = z.object({
   id: z.coerce.number().optional(),

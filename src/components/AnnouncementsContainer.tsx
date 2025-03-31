@@ -10,7 +10,6 @@ type AnnouncementWithRelations = Announcement & {
     students?: Student[];
   }) | null;
 };
-
 const AnnouncementsContainer = async () => {
   const { userId, sessionClaims } = await auth();
   type Role = "admin" | "parent" | "teacher" | "student";
@@ -30,7 +29,7 @@ const AnnouncementsContainer = async () => {
       },
     },
   }) as AnnouncementWithRelations[];
-
+  console.log("hello")
   const filteredData = data.filter((announcement: AnnouncementWithRelations) => {
     if (role === "admin") return true;
     if (!announcement.class) return true;

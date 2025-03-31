@@ -1,8 +1,10 @@
+"use server";
 import { Teacherschema } from './../components/forms/TeacherForm';
 import { z } from 'zod';
-"use server";
 import { revalidatePath } from "next/cache";
 import prisma from "./prisma";
+import { clerkClient } from '@clerk/nextjs/server';
+import { Gender } from '@prisma/client';
 
 type TeacherFormData = z.infer<typeof Teacherschema>;
 
@@ -124,9 +126,53 @@ export const deleteClass = async (state: { success: boolean; error: boolean }, f
   };
 
   export const createTeacher = async (state: { success: boolean; error: boolean }, formData: TeacherFormData) => {
-    console.log("hello i cam e",formData)
+    const genderValue = formData.gender.toUpperCase();
+          const clerk= await clerkClient()
+        
     try {
-     const teacher = await prisma.teacher.create({
+      const clerkTeacher = await clerk.users.createUser({
+        username: formData.username,
+        password: formData.password,
+        firstName:formData.name,
+        lastName:formData.surname,
+        publicMetadata: { role: "teacher" }
+      });
+
+      const teacher = await prisma.teacher.create({
+        
+        data: {
+          id: clerkTeacher.id,
+          username: formData.username,
+          name: formData.name,
+          surname: formData.surname,
+          email: formData.email,
+          phone: formData.phone,
+          image: formData.image ?? null,
+          bloodGroup: formData.bloodGroup,
+          address: formData.address,
+          gender: genderValue as keyof typeof Gender,
+          subjects: {
+            connect: formData.subjects?.map((subjectId:string)=>({
+              id:parseInt(subjectId)
+            }))
+          }
+        
+        },
+      }); 
+      console.log("newTeacher", teacher);
+      return { success: true, error: false };
+    } catch (err) {
+      console.log("Error creating teacher:", err);
+      return { success: false, error: true };
+    }
+  };
+  export const updateTeacher = async (state: { success: boolean; error: boolean }, formData: TeacherFormData) => {
+    console.log("hello boss")
+    try {
+      await prisma.teacher.update({
+        where: {
+          id: parseInt(formData.id || "0"),
+        },
         data: {
           username: formData.username,
           name: formData.name,
@@ -136,41 +182,21 @@ export const deleteClass = async (state: { success: boolean; error: boolean }, f
           password: formData.password,
           address: formData.address,
           gender: formData.gender,
-          birthDate: formData.birthDate,
           bloodGroup: formData.bloodGroup,
         },
       }); 
-      console.log("newTeacher", teacher)
+  
       return { success: true, error: false };
-    } catch (err) {
-      console.log(err);
-      return { success: false, error: true };
-    }
-  };
-  export const updateTeacher= async (state: { success: boolean; error: boolean }, formData: { title: string; id: string; teachers: string[]; capacity: number; gradeId: string }) => {
-    console.log("hello boss")
-    try {
-      await prisma.teacher.update({
-        where: {
-          id: parseInt(formData.id),
-        },
-        data: {
-          title: formData.title,
-          capacity: formData.capacity,
-          gradeId: parseInt(formData.gradeId),
-          supervisorId: formData.teachers[0] || null,
-        },
-      }); 
-    
-      return { success: true, error: false };
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+
+      console.error("Error creating user:", error);
+      
       return { success: false, error: true };
     }
   };
   
   export const deleteTeacher = async (state: { success: boolean; error: boolean }, formData: { id: string }) => {
-  
+  console.log("delte",formData)
       try {
        await prisma.teacher.delete({
           where: {

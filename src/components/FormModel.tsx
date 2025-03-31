@@ -5,7 +5,7 @@ import { useState } from "react";
 // import TeacherForm from "./forms/TeacherForm";
 // import StudentForm from "./forms/StudentForm";
 import dynamic from "next/dynamic";
-import { deleteClass, deleteSubject } from "@/lib/serverAction";
+import { deleteClass, deleteSubject, deleteTeacher } from "@/lib/serverAction";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { FormModelProps } from "./FormContainer";
@@ -14,7 +14,7 @@ const deleteActionMap = {
   subject: deleteSubject,
   class: deleteClass,
   // class: deleteClass,
-  // teacher: deleteTacher,
+  teacher: deleteTeacher,
   // parent: deleteParent,
   // announcement: deleteAnnouncement,
   // event: deleteEvent,
