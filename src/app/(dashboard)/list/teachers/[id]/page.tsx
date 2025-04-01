@@ -1,11 +1,29 @@
-import Announcements from "@/components/Announcements";
+import AnnouncementsContainer from "@/components/AnnouncementsContainer";
 import BigCalenderContainer from "@/components/BigCalenderContainer";
-import FormModel from "@/components/FormModel";
+import FormContainer from "@/components/FormContainer";
 import Performence from "@/components/Performence";
+import prisma from "@/lib/prisma";
+import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
 
-const SingleTeacherPage = () => {
+const SingleTeacherPage =async ({params:id}:{params:{id:string}}) => {
+  const { sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role: string })?.role;
+  const teacher=await prisma.teacher.findUnique({
+    where:id,
+    include:{
+    _count:{
+      select:{
+        subjects:true,
+        lessons:true,
+        classes:true
+      }
+    }
+    }
+  })
+  console.log("TEACHER FORM SINGLE PGE",teacher)
+ if(!teacher)return "not found"
   return (
     <div className="flex-1 p-4 flex flex-col gap-4 xl:flex-row">
       {/* left */}
@@ -17,7 +35,7 @@ const SingleTeacherPage = () => {
             <div className="w-1/3">
               <Image
                 src={
-                  "https://media.istockphoto.com/id/1297832726/photo/portrait-of-a-smiling-young-businessman.jpg?s=612x612&w=0&k=20&c=32Qg7TnqfGkrDwTL3q0X0Kx9ab3JDzuqxzp4poH39zc="
+                  teacher.image || "https://media.istockphoto.com/id/1297832726/photo/portrait-of-a-smiling-young-businessman.jpg?s=612x612&w=0&k=20&c=32Qg7TnqfGkrDwTL3q0X0Kx9ab3JDzuqxzp4poH39zc="
                 }
                 alt="teacher"
                 width={144}
@@ -27,23 +45,27 @@ const SingleTeacherPage = () => {
             </div>
             <div className="w-2/3 flex flex-col justify-between gap-4">
             <div className="flex items-center gap-4">
-              <h1 className="text-xl font-semibold">Mr.George</h1>
-              
-              <FormModel table="teacher" type="update" id="1" data={
-                {
-                  id: "1",
-                  username: "george",
-                  email: "george@gmail.com",
-                  password: "123456",
-                  firstName: "George",
-                  lastName: "Smith",
-                  phone: "9876543210",
-                  gender: "male",
-                  address: "1234567890",
-                  image: "https://media.istockphoto.com/id/1297832726/photo/portrait-of-a-smiling-young-businessman.jpg?s=612x612&w=0&k=20&c=32Qg7TnqfGkrDwTL3q0X0Kx9ab3JDzuqxzp4poH39zc=",
-                }
-              } />
-</div>
+              <h1 className="text-xl font-semibold">{teacher.name}</h1>
+              {role === "admin" && (
+                <FormContainer 
+                  table="teacher" 
+                  type="update" 
+                  id={teacher.id} 
+                  data={{
+                    id: teacher.id,
+                    username: teacher.username || "",
+                    name: teacher.name || "",
+                    surname: teacher.surname || "",
+                    email: teacher.email || "",
+                    phone: teacher.phone || "",
+                    gender: teacher.gender.toLowerCase(),
+                    address: teacher.address || "",
+                    bloodGroup: teacher.bloodGroup || "",
+                    subjects: teacher.subjects?.map(subject => subject.id.toString()) || []
+                  }}
+                />
+              )}
+              </div>
               <p className="text-sm text-gray-500">
                 Lorem, ipsum dolor sit amet conoluptatum dolorem ipsum illum
                 enim
@@ -56,7 +78,7 @@ const SingleTeacherPage = () => {
                     width={16}
                     height={16}
                   ></Image>
-                  <p>A+</p>
+                  <p>{teacher.bloodGroup}</p>
                 </div>
                 <div className="w-full  md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                   <Image
@@ -74,7 +96,7 @@ const SingleTeacherPage = () => {
                     width={16}
                     height={16}
                   ></Image>
-                  <p>user@gmail.com</p>
+                  <p>{teacher.email}</p>
                 </div>
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                   <Image
@@ -83,7 +105,7 @@ const SingleTeacherPage = () => {
                     width={16}
                     height={16}
                   ></Image>
-                  <p> 9876543210</p>
+                  <p>{teacher.phone}</p>
                 </div>
               </div>
             </div>
@@ -114,8 +136,8 @@ const SingleTeacherPage = () => {
                 className="w-6 h-6"
               ></Image>
               <div>
-                <h1 className="text-2xl font-semibold">10</h1>
-                <span className="text-sm text-gray-400">Classes</span>
+                <h1 className="text-2xl font-semibold">{teacher?._count?.subjects}</h1>
+                <span className="text-sm text-gray-400">Subject</span>
               </div>
             </div>
 
@@ -129,7 +151,7 @@ const SingleTeacherPage = () => {
                 className="w-6 h-6"
               ></Image>
               <div>
-                <h1 className="text-2xl font-semibold">5</h1>
+                <h1 className="text-2xl font-semibold">{teacher?._count?.lessons}</h1>
                 <span className="text-sm text-gray-400">lessons</span>
               </div>
             </div>
@@ -143,7 +165,7 @@ const SingleTeacherPage = () => {
                 className="w-6 h-6"
               ></Image>
               <div>
-                <h1 className="text-2xl font-semibold">10</h1>
+                <h1 className="text-2xl font-semibold">{teacher?._count?.classes}</h1>
                 <span className="text-sm text-gray-400">Classes</span>
               </div>
             </div>
@@ -153,7 +175,7 @@ const SingleTeacherPage = () => {
         {/* bottom */}
         <div className="mt-4 bg-white rounded-md p-4 h-[800px]">
           <h1>Teeacher&rsquo; Schedule</h1>
-          <BigCalenderContainer />
+          <BigCalenderContainer type="teacherId" id={teacher.id} />
         </div>
       </div>
       {/* right */}
@@ -169,7 +191,7 @@ const SingleTeacherPage = () => {
           </div>
         </div>
         <Performence />
-        <Announcements />
+        <AnnouncementsContainer/>
       </div>
     </div>
   );

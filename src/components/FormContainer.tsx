@@ -23,7 +23,7 @@ export interface FormModelProps {
   }
 
 const FormContainer = async({ table, type, data, id }:FormModelProps ) => {
-    console.log("table",table,"id",id, "grade",)
+
     let relatedData = {};
     if(type !== "delete"){
         switch(table){
@@ -57,7 +57,7 @@ const FormContainer = async({ table, type, data, id }:FormModelProps ) => {
                 break;
         }
     }
-   
+
     return (
         <div>
             <FormModel table={table} type={type} data={data} id={id} relatedData={relatedData} />

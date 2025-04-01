@@ -13,8 +13,8 @@ import { FormModelProps } from "./FormContainer";
 const deleteActionMap = {
   subject: deleteSubject,
   class: deleteClass,
-  // class: deleteClass,
   teacher: deleteTeacher,
+  // class: deleteClass,
   // parent: deleteParent,
   // announcement: deleteAnnouncement,
   // event: deleteEvent,
@@ -102,7 +102,6 @@ const forms: {
   // exam: (type, relatedData, data) => <ExamForm type={type} data={data} />,
   // assignment: (type, relatedData, data) => <AssignmentForm type={type} data={data} />,
   // result: (type, relatedData, data) => <ResultForm type={type} data={data} />,
-
   // event: (type, relatedData, data) => <EventForm type={type} data={data} />,
 };
 

@@ -128,7 +128,6 @@ export const deleteClass = async (state: { success: boolean; error: boolean }, f
   export const createTeacher = async (state: { success: boolean; error: boolean }, formData: TeacherFormData) => {
     const genderValue = formData.gender.toUpperCase();
           const clerk= await clerkClient()
-        
     try {
       const clerkTeacher = await clerk.users.createUser({
         username: formData.username,
@@ -167,11 +166,36 @@ export const deleteClass = async (state: { success: boolean; error: boolean }, f
     }
   };
   export const updateTeacher = async (state: { success: boolean; error: boolean }, formData: TeacherFormData) => {
-    console.log("hello boss")
+    console.log("TEACHER ID", formData.id);
+    const genderValue = formData.gender.toUpperCase();
     try {
+      if (!formData.id) {
+        return { success: false, error: true };
+      }
+
+      const existingTeacher = await prisma.teacher.findUnique({
+        where: {
+          id: formData.id
+        }
+      });
+
+      if (!existingTeacher) {
+        console.log("no teacher");
+        return { success: false, error: true };
+      }
+
+      // Update Clerk user
+      const clerk = await clerkClient();
+      await clerk.users.updateUser(existingTeacher.id, {
+        username: formData.username,
+        firstName: formData.name,
+        lastName: formData.surname,
+      });
+
+      // Update Prisma teacher
       await prisma.teacher.update({
         where: {
-          id: parseInt(formData.id || "0"),
+          id: formData.id
         },
         data: {
           username: formData.username,
@@ -179,35 +203,32 @@ export const deleteClass = async (state: { success: boolean; error: boolean }, f
           surname: formData.surname,
           email: formData.email,
           phone: formData.phone,
-          password: formData.password,
           address: formData.address,
-          gender: formData.gender,
+          gender: genderValue as keyof typeof Gender,
           bloodGroup: formData.bloodGroup,
+          subjects: formData.subjects ? {
+            set: formData.subjects.map(subjectId => ({ id: parseInt(subjectId) }))
+          } : undefined
         },
       }); 
   
       return { success: true, error: false };
     } catch (error) {
-
-      console.error("Error creating user:", error);
-      
+      console.error("Error updating teacher:", error);
       return { success: false, error: true };
     }
   };
   
   export const deleteTeacher = async (state: { success: boolean; error: boolean }, formData: { id: string }) => {
-  console.log("delte",formData)
-      try {
-       await prisma.teacher.delete({
-          where: {
-            id: parseInt(formData.id)
-          }
-        });
-    
-        return { success: true, error: false };
-    
-      } catch (err) {
-        console.log("Delete error:", err);
-        return { success: false, error: true };
-      }
-    };
+    try {
+      await prisma.teacher.delete({
+        where: {
+          id: formData.id
+        }
+      });
+      return { success: true, error: false };
+    } catch (err) {
+      console.log("Delete error:", err);
+      return { success: false, error: true };
+    }
+  };

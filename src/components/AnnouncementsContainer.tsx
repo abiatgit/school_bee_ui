@@ -11,10 +11,12 @@ type AnnouncementWithRelations = Announcement & {
   }) | null;
 };
 const AnnouncementsContainer = async () => {
+  console.log("hello form announcemet")
   const { userId, sessionClaims } = await auth();
-  type Role = "admin" | "parent" | "teacher" | "student";
-  const role = (sessionClaims?.metaData as { role: Role })?.role as string;
 
+  type Role = "admin" | "parent" | "teacher" | "student";
+  const role = (sessionClaims?.metadata as { role: Role })?.role;
+  console.log("USER_ROLE", role);
   const data = await prisma.announcement.findMany({
     take: 3,
     orderBy: {
@@ -29,7 +31,7 @@ const AnnouncementsContainer = async () => {
       },
     },
   }) as AnnouncementWithRelations[];
-  console.log("hello")
+
   const filteredData = data.filter((announcement: AnnouncementWithRelations) => {
     if (role === "admin") return true;
     if (!announcement.class) return true;

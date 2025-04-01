@@ -1,10 +1,25 @@
-import Announcements from "@/components/Announcements";
-import BigCalender from "@/components/BigCalender";
+import AnnouncementsContainer from "@/components/AnnouncementsContainer";
+import BigCalenderContainer from "@/components/BigCalenderContainer";
+import FormContainer from "@/components/FormContainer";
 import Performence from "@/components/Performence";
+import prisma from "@/lib/prisma";
+import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
 
-const SingleStudentPage = () => {
+const SingleStudentPage = async ({ params }: { params: { id: string } }) => {
+  const { sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role: string })?.role;
+  const student = await prisma.student.findUnique({
+    where: {
+      id: params.id,
+    },
+    include: {
+      class: true,
+    },
+  });
+console.log("Fetched data",student)
+  if (!student) return "not found";
   return (
     <div className="flex-1 p-4 flex flex-col gap-4 xl:flex-row">
       {/* left */}
@@ -16,7 +31,7 @@ const SingleStudentPage = () => {
             <div className="w-1/3">
               <Image
                 src={
-                 "https://imgs.search.brave.com/X5CsFSE3VbCLKEElurN6jMVNEX1Iv1S_46KXHEVy-FU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvNjA4/MDAyNzgwL3Bob3Rv/L2hhcHB5LXN0dWRl/bnQtYXQtdGhlLXNj/aG9vbC5qcGc_cz02/MTJ4NjEyJnc9MCZr/PTIwJmM9QUd0NjNL/TldHMnI4SlZ5MVda/NEMydmNYME45LURQ/ajZDNmJ4aFlNR3o0/OD0"
+                 student.image || "https://imgs.search.brave.com/X5CsFSE3VbCLKEElurN6jMVNEX1Iv1S_46KXHEVy-FU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvNjA4/MDAyNzgwL3Bob3Rv/L2hhcHB5LXN0dWRl/bnQtYXQtdGhlLXNj/aG9vbC5qcGc_cz02/MTJ4NjEyJnc9MCZr/PTIwJmM9QUd0NjNL/TldHMnI4SlZ5MVda/NEMydmNYME45LURQ/ajZDNmJ4aFlNR3o0/OD0"
                 }
                 alt="teacher"
                 width={144}
@@ -25,7 +40,26 @@ const SingleStudentPage = () => {
               ></Image>
             </div>
             <div className="w-2/3 ms-4 flex flex-col justify-between gap-4">
-              <h2 className="text-2xl font-semibold">Karen</h2>
+              <h2 className="text-2xl font-semibold">{student?.name}</h2>
+              {role === "admin" && (
+                <FormContainer
+                  table="student"
+                  type="update"
+                  //   id={teacher.id}
+                  data={{
+                    id: student.id,
+                    username: student.username || "",
+                    name: student.name || "",
+                    surname: student.surname || "",
+                    email: student.email || "",
+                    phone: student.phone || "",
+                    gender: student.gender.toLowerCase(),
+                    address: student.address || "",
+                    bloodGroup: student.bloodGroup || "",
+                    subjects: student.subjects?.map((subject: { id: number }) => subject.id.toString()) || []
+                  }}
+                />
+              )}
               <p className="text-sm text-gray-500">
                 Lorem, ipsum dolor sit amet conoluptatum dolorem ipsum illum
                 enim
@@ -38,7 +72,7 @@ const SingleStudentPage = () => {
                     width={16}
                     height={16}
                   ></Image>
-                  <p>A+</p>
+                  <p>{student.bloodGroup}</p>
                 </div>
                 <div className="w-full  md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                   <Image
@@ -56,7 +90,7 @@ const SingleStudentPage = () => {
                     width={16}
                     height={16}
                   ></Image>
-                  <p>user@gmail.com</p>
+                  <p>{student.email}</p>
                 </div>
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                   <Image
@@ -65,7 +99,7 @@ const SingleStudentPage = () => {
                     width={16}
                     height={16}
                   ></Image>
-                  <p> 9876543210</p>
+                  <p>{student.phone}</p>
                 </div>
               </div>
             </div>
@@ -82,13 +116,12 @@ const SingleStudentPage = () => {
                 className="w-6 h-6"
               ></Image>
               <div>
-                <h1 className="text-2xl font-semibold">9th</h1>
-                <span className="text-sm text-gray-400">Grade</span>
+                <h1 className="text-2xl font-semibold">{student.class.title}</h1>
+                <span className="text-sm text-gray-400">{student.class.grade}</span>
               </div>
             </div>
             {/* card*/}
             <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
-              
               <Image
                 src={"/singleClass.png"}
                 alt="calendar"
@@ -97,8 +130,8 @@ const SingleStudentPage = () => {
                 className="w-6 h-6"
               ></Image>
               <div>
-                <h1 className="text-2xl font-semibold">9A</h1>
-                <span className="text-sm text-gray-400">Class</span>
+                <h1 className="text-2xl font-semibold">{student.class.title}</h1>
+                <span className="text-sm text-gray-400">{student.class.grade}</span>
               </div>
             </div>
 
@@ -131,12 +164,11 @@ const SingleStudentPage = () => {
               </div>
             </div>
           </div>
-        
         </div>
         {/* bottom */}
         <div className="mt-4 bg-white rounded-md p-4 h-[800px]">
-          <h1>Teeacher&rsquo; Schedule</h1>
-          <BigCalender />
+          <h1>Student&rsquo; Schedule</h1>
+          {/* <BigCalenderContainer type="classID" id={student.classId} /> */}
         </div>
       </div>
       {/* right */}
@@ -144,15 +176,40 @@ const SingleStudentPage = () => {
         <div className="bg-white rounded-md p-4 ">
           <h1 className="text-2xl font-semibold">Shortcuts</h1>
           <div className="mt-4 flex gap-4 flex-wrap text-xs text-gray-500">
-            <Link className="p-3 cursor-pointer rounded-md bg-abiSky text-gray-500" href={`/list/teachers?classId=${1}`}>Student&rsquo; Teachers</Link>
-            <Link className="p-3 cursor-pointer rounded-md bg-abiYellow text-gray-500" href={`/list/exams?classId=${1}`}>Student&rsquo; Exams</Link>
-            <Link className="p-3 cursor-pointer rounded-md bg-abiPurple text-gray-500" href={`/list/lessons?classId=${2}`}>Student&rsquo; Lessons</Link>
-            <Link className="p-3 cursor-pointer rounded-md bg-abiSky text-gray-" href={`/list/assignments?classId=${2}` }>Student&rsquo; Assignments</Link>
-            <Link className="p-3 cursor-pointer rounded-md bg-green-300 text-gray-"   href={`/list/results?studentId"=${2}`}>Student&rsquo; Results</Link>
+            <Link
+              className="p-3 cursor-pointer rounded-md bg-abiSky text-gray-500"
+              href={`/list/teachers?classId=${1}`}
+            >
+              Student&rsquo; Teachers
+            </Link>
+            <Link
+              className="p-3 cursor-pointer rounded-md bg-abiYellow text-gray-500"
+              href={`/list/exams?classId=${1}`}
+            >
+              Student&rsquo; Exams
+            </Link>
+            <Link
+              className="p-3 cursor-pointer rounded-md bg-abiPurple text-gray-500"
+              href={`/list/lessons?classId=${2}`}
+            >
+              Student&rsquo; Lessons
+            </Link>
+            <Link
+              className="p-3 cursor-pointer rounded-md bg-abiSky text-gray-"
+              href={`/list/assignments?classId=${2}`}
+            >
+              Student&rsquo; Assignments
+            </Link>
+            <Link
+              className="p-3 cursor-pointer rounded-md bg-green-300 text-gray-"
+              href={`/list/results?studentId"=${2}`}
+            >
+              Student&rsquo; Results
+            </Link>
           </div>
         </div>
         <Performence />
-        <Announcements />
+        <AnnouncementsContainer />
       </div>
     </div>
   );

@@ -62,12 +62,25 @@ export default function TeacherForm({
   setOpen: Dispatch<SetStateAction<boolean>>;
   relatedData?:any
 }) {
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<TeacherFormData>({
     resolver: zodResolver(Teacherschema),
+    defaultValues: {
+      id: data?.id || "",
+      username: data?.username || "",
+      name: data?.name || "",
+      surname: data?.surname || "",
+      email: data?.email || "",
+      phone: data?.phone || "",
+      gender: data?.gender || "male",
+      address: data?.address || "",
+      bloodGroup: data?.bloodGroup || "",
+      subjects: data?.subjects || []
+    }
   });
 
 const [img,setImg]=useState<any>()
@@ -100,14 +113,11 @@ const {subjects}=relatedData
     }
     startTransition(() => {
       formData.image = img?.secure_url;
-      // Transform subjects array to match schema
       if (formData.subjects) {
         formData.subjects = Array.isArray(formData.subjects) 
           ? formData.subjects
           : [formData.subjects];
       }
-      console.log("Form data:", formData);
-      console.log("Form type:", type);
       formAction(formData);
     });
   };
@@ -134,7 +144,7 @@ const {subjects}=relatedData
           register={register}
           error={errors}
           placeholder="Password"
-          type="text"
+          type="password"
           
         />
         <InputField<TeacherFormData>
@@ -204,9 +214,8 @@ const {subjects}=relatedData
             className="ring-[1.5px] ring-gray-300 rounded-md p-2"
             defaultValue={data?.gender}
           >
-            <option value="Male">MALE</option>
+            <option value="male">MALE</option>
             <option value="female">FEMALE</option>
-            <option value="other">Other</option>
           </select>
           {errors?.gender?.message && (
             <p className="text-red-500 text-xs">
@@ -234,8 +243,6 @@ const {subjects}=relatedData
             </p>
           )}
         </div>
-
-      
         <CldUploadWidget uploadPreset="schoolbee" onSuccess={(result, widget) => {
           setImg(result.info);
           widget.close();
@@ -250,10 +257,7 @@ const {subjects}=relatedData
             </div>
           )}
         </CldUploadWidget>
-
-
       </div>
-
       <button
         type="submit"
         className="bg-blue-500 text-white py-2 px-4 rounded-md border-none w-max self-center"

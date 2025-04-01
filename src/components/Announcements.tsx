@@ -10,10 +10,10 @@ interface AnnouncementProp {
   }[];
 }
 
-const Announcements = ({ data }: AnnouncementProp) => {
+export default function Announcements({ data = [] }: { data: any[] }) {
   return (
     <div className="space-y-4">
-      {data.map((item, index) => (
+      {data?.map((item, index) => (
         <div className={`rounded-md p-4 ${index === 0 ? 'bg-abiYellow' : index === 1 ? 'bg-abiPurple' : 'bg-abiSky'}`} key={item.id}>
           <div className="flex justify-between items-center">
             <h2 className="text-lg font-medium">
@@ -30,6 +30,4 @@ const Announcements = ({ data }: AnnouncementProp) => {
       ))}
     </div>
   );
-};
-
-export default Announcements;
+}
