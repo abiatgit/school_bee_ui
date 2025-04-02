@@ -4,7 +4,6 @@ import TableSearch from "@/components/TableSearch";
 import Image from "next/image";
 import React from "react";
 import Link from "next/link";
-import FormModel from "@/components/FormModel";
 import { Teacher, Subject, Class, Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { PAGE_NUMBER, PAGE_SIZE } from "@/lib/settings";

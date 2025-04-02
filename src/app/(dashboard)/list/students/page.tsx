@@ -9,6 +9,7 @@ import prisma from "@/lib/prisma";
 import { Class, Prisma, Student } from "@prisma/client";
 import { PAGE_NUMBER, PAGE_SIZE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
+import FormContainer from "@/components/FormContainer";
 type StudentList =Student& {class:Class}
 
 
@@ -86,7 +87,7 @@ const StudentsListPage = async ({
                   </button>
                 </Link>
                 {(role === "admin" || role === "teacher") && (
-                  <FormModel
+                  <FormContainer
                     table="student"
                     type="delete"
                     id={item.id.toString()}
@@ -159,7 +160,7 @@ const StudentsListPage = async ({
             </button>
             {(role === "admin" || role === "teacher") && (
               <>
-              <FormModel table="student" type="create" />
+              <FormContainer table="student" type="create" />
               </>
             )}
           </div>

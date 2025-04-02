@@ -3,7 +3,6 @@ import React, { startTransition, useActionState, useEffect } from "react";
 import Image from "next/image";
 import { useState } from "react";
 // import TeacherForm from "./forms/TeacherForm";
-// import StudentForm from "./forms/StudentForm";
 import dynamic from "next/dynamic";
 import { deleteClass, deleteSubject, deleteTeacher } from "@/lib/serverAction";
 import { useRouter } from "next/navigation";
@@ -14,13 +13,13 @@ const deleteActionMap = {
   subject: deleteSubject,
   class: deleteClass,
   teacher: deleteTeacher,
+  student: deleteTeacher,
   // class: deleteClass,
   // parent: deleteParent,
   // announcement: deleteAnnouncement,
   // event: deleteEvent,
   // lesson: deleteLesson,
   // result: deleteResult,
-  // student: deleteTeacher,
   // exam: deleteExam,
   // assignment: deleteAssignment,
   // attendance: deleteAttendance,
@@ -35,10 +34,10 @@ const SubjectForm = dynamic(() => import("./forms/SubjuctForm"), {
 const TeacherForm = dynamic(() => import("./forms/TeacherForm"), {
   loading: () => <div>Loading...</div>,
 });
+const StudentForm = dynamic(() => import("./forms/StudentForm"), {
+  loading: () => <div>Loading...</div>,
+});
 // const ParentForm = dynamic(() => import("./forms/ParentForm"), {
-//   loading: () => <div>Loading...</div>,
-// });
-// const StudentForm = dynamic(() => import("./forms/StudentForm"), {
 //   loading: () => <div>Loading...</div>,
 // });
 // const AnnouncementForm = dynamic(() => import("./forms/AnnouncementForm"), {
@@ -77,7 +76,7 @@ const forms: {
   teacher: (type, relatedData, data, setOpen) => (
     <TeacherForm type={type}   relatedData={relatedData} data={data} setOpen={setOpen!} />
   ),
-  // student: (type, relatedData, data) => <StudentForm type={type} data={data} />,
+  student: (type, relatedData, data,setOpen) => <StudentForm type={type} data={data} setOpen={setOpen!}/>,
   // parent: (type, relatedData, data,setOpen) => <ParentForm type={type} data={data} setOpen={setOpen!} relatedData={relatedData}/>,
   class: (type, relatedData, data, setOpen) => (
     <ClassForm

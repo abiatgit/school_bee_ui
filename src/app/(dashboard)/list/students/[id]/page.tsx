@@ -2,10 +2,16 @@ import AnnouncementsContainer from "@/components/AnnouncementsContainer";
 import BigCalenderContainer from "@/components/BigCalenderContainer";
 import FormContainer from "@/components/FormContainer";
 import Performence from "@/components/Performence";
+import StudentAttendenceCard from "@/components/StudentAttendenceCard";
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
+import { Student, Class } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
+
+type StudentWithClass = Student & {
+  class: Class;
+};
 
 const SingleStudentPage = async ({ params }: { params: { id: string } }) => {
   const { sessionClaims } = await auth();
@@ -17,7 +23,7 @@ const SingleStudentPage = async ({ params }: { params: { id: string } }) => {
     include: {
       class: true,
     },
-  });
+  }) as StudentWithClass | null;
 console.log("Fetched data",student)
   if (!student) return "not found";
   return (
@@ -56,7 +62,6 @@ console.log("Fetched data",student)
                     gender: student.gender.toLowerCase(),
                     address: student.address || "",
                     bloodGroup: student.bloodGroup || "",
-                    subjects: student.subjects?.map((subject: { id: number }) => subject.id.toString()) || []
                   }}
                 />
               )}
@@ -115,10 +120,7 @@ console.log("Fetched data",student)
                 height={24}
                 className="w-6 h-6"
               ></Image>
-              <div>
-                <h1 className="text-2xl font-semibold">{student.class.title}</h1>
-                <span className="text-sm text-gray-400">{student.class.grade}</span>
-              </div>
+            <StudentAttendenceCard student={student}/>
             </div>
             {/* card*/}
             <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
@@ -131,7 +133,7 @@ console.log("Fetched data",student)
               ></Image>
               <div>
                 <h1 className="text-2xl font-semibold">{student.class.title}</h1>
-                <span className="text-sm text-gray-400">{student.class.grade}</span>
+                <span className="text-sm text-gray-400">Grade {student.class.gradeId}</span>
               </div>
             </div>
 
@@ -168,7 +170,7 @@ console.log("Fetched data",student)
         {/* bottom */}
         <div className="mt-4 bg-white rounded-md p-4 h-[800px]">
           <h1>Student&rsquo; Schedule</h1>
-          {/* <BigCalenderContainer type="classID" id={student.classId} /> */}
+          <BigCalenderContainer type="classID" id={student.class.id} />
         </div>
       </div>
       {/* right */}
