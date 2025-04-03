@@ -1,7 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
-
 import { currentUser } from "@clerk/nextjs/server";
+import { SignOutButton } from "@clerk/nextjs";
+
 const menuItems = [
   {
     title: "MENU",
@@ -110,8 +111,9 @@ const menuItems = [
       {
         icon: "/logout.png",
         label: "Logout",
-        href: "/logout",
+        href: "#",
         visible: ["admin", "teacher", "student", "parent"],
+        isLogout: true,
       },
     ],
   },
@@ -129,6 +131,16 @@ export const Menu = async () => {
           <span className="hidden lg:block text-gray-400 font-light my-4 ">{i.title}</span>
           {i.items.map((item) => {
             if(item.visible.includes(role)) {
+              if (item.isLogout) {
+                return (
+                  <SignOutButton key={item.label}>
+                    <button className="flex items-center justify-center lg:justify-start py-4 gap-4 text-gray-600 rounded-md cursor-pointer hover:bg-abiSkyLight md:px-3 w-full">
+                      <Image src={item.icon} alt="icons" width={20} height={20} />
+                      <span className="hidden lg:block ">{item.label}</span>
+                    </button>
+                  </SignOutButton>
+                );
+              }
               return (
                 <Link href={item.href} key={item.label}
                  className="flex items-center justify-center lg:justify-start py-4 gap-4 text-gray-600 rounded-md cursor-pointer hover:bg-abiSkyLight md:px-3">

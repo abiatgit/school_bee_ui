@@ -3,63 +3,113 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputField from "../InputField";
+import { CldUploadWidget, CloudinaryUploadWidgetResults } from "next-cloudinary";
+import { Dispatch, SetStateAction, startTransition, useActionState, useEffect, useState } from "react";
 import Image from "next/image";
-const schema = z.object({
-  username: z
+import { createStudent, updateStudent } from "@/lib/serverAction";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
+type CloudinaryResult = {
+  info?: {
+    secure_url?: string;
+  };
+  widget?: {
+    close: () => void;
+  };
+};
+
+const schema = z.object({
+  id: z.string().optional(),
+  username: z
     .string()
-    .min(3, { message: "Username  must be 3 characters" })
-    .max(20, { message: "Username  must be 20 characters" }),
-  age: z.number().min(10),
-  email: z.string().email({ message: "Invalid email address" }),
-  password: z.string().min(8, { message: "Password must be 8 characters" }),
-  firstName: z
+    .min(3, { message: "Username must be 3 characters" })
+    .max(20, { message: "Username must be 20 characters" }),
+  name: z
     .string()
-    .min(1, { message: "First name must be 1 characters" })
+    .min(1, { message: "First name must be 1 character" })
     .max(20, { message: "First name must be 20 characters" }),
-  lastName: z
+  surname: z
     .string()
-    .min(1, { message: "Last name must be 1 characters" })
+    .min(1, { message: "Last name must be 1 character" })
     .max(20, { message: "Last name must be 20 characters" }),
+  email: z.string().email({ message: "Invalid email address" }).optional(),
   phone: z
     .string()
-    .min(10, { message: "Phone must be 10 characters" })
-    .max(15, { message: "Phone must be 15 characters" }),
+    .min(10, { message: "Phone number must be at least 10 characters" })
+    .max(15, { message: "Phone number must be at most 15 characters" })
+    .nullable()
+    .optional(),
   address: z
     .string()
     .min(3, { message: "Address must be 3 characters" })
     .max(50, { message: "Address must be 50 characters" }),
   gender: z.enum(["male", "female", "other"], { message: "Invalid gender" }),
-  birthDate: z.date(),
   bloodGroup: z.string().min(1, { message: "Blood group is required" }),
-  image: z.instanceof(File, { message: "Image is required" }),
+  image: z.string().optional(),
 });
-
 type StudentFormData = z.infer<typeof schema>;
 
 export default function StudentForm({
   type,
   data,
+  setOpen,
 }: {
   type: "create" | "update";
   data?: Partial<StudentFormData>;
+  setOpen: (open: boolean) => void;
 }) {
+  const router = useRouter();
+  const [img, setImg] = useState<string | undefined>(data?.image);
+
   const {
-       register,
+    register,
     handleSubmit,
     formState: { errors },
-  } = 
-    useForm<StudentFormData>({
+  } = useForm<StudentFormData>({
     resolver: zodResolver(schema),
+    defaultValues: data
   });
 
-  const onSubmit = handleSubmit((data: StudentFormData) => {
-    console.log(data);
-  });
+  const [state, formAction] = useActionState(
+    (state: { success: boolean; error: boolean }, formData: StudentFormData) =>
+      type === "create" ? createStudent(state, formData) : updateStudent(state, formData),
+    { success: false, error: false }
+  );
+
+  useEffect(() => {
+    if (state.success) {
+      setOpen(false);
+      router.refresh();
+      toast.success(`Student has been ${type === "create" ? "Created" : "Updated"}`, {
+        toastId: "success",
+      });
+    }
+    if (state.error) {
+      toast.error("Failed to update student.", { toastId: "error" });
+    }
+  }, [state.success, state.error]);
+
+  const onSubmit = async (formData: StudentFormData) => {
+    console.log("Form submitted with data:", formData);
+    if (Object.keys(errors).length > 0) {
+      console.log("Validation errors:", errors);
+      return;
+    }
+    try {
+      formData.image = img;
+      const result = await formAction(formData);
+      console.log("Form action result:", result);
+    } catch (error) {
+      console.error("Form submission error:", error);
+    }
+  };
 
   return (
-    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <h1 className="text-2xl font-bold">{type === "create" ? "Create a Student " : "Update a Student"}</h1>
+    <form className="flex flex-col gap-8" onSubmit={handleSubmit(onSubmit)}>
+      <h1 className="text-2xl font-bold">
+        {type === "create" ? "Create a Student " : "Update a Student"}
+      </h1>
       <span className="text-sm text-gray-500 font-medium">
         Authentication Information
       </span>
@@ -83,34 +133,25 @@ export default function StudentForm({
           type="email"
           defaultValue={data?.email}
         />
-        <InputField<StudentFormData>
-          label="Password"
-          name="password"
-          register={register}
-          error={errors}
-          placeholder="Password"
-          type="password"
-          defaultValue={data?.password}
-        />
       </div>
       <div className="flex justify-between flex-wrap gap-4">
         <InputField<StudentFormData>
           label="First Name"
-          name="firstName"
+          name="name"
           register={register}
           error={errors}
           placeholder="First Name"
           type="text"
-          defaultValue={data?.firstName}
+          defaultValue={data?.name}
         />
         <InputField<StudentFormData>
           label="Last Name"
-          name="lastName"
+          name="surname"
           register={register}
           error={errors}
           placeholder="Last Name"
           type="text"
-          defaultValue={data?.lastName}
+          defaultValue={data?.surname}
         />
         <InputField<StudentFormData>
           label="Phone"
@@ -119,7 +160,7 @@ export default function StudentForm({
           error={errors}
           placeholder="Phone"
           type="text"
-          defaultValue={data?.phone}
+          defaultValue={data?.phone || ""}
         />
       </div>
       <div className="flex justify-between flex-wrap gap-4">
@@ -141,53 +182,50 @@ export default function StudentForm({
           type="text"
           defaultValue={data?.bloodGroup}
         />
-        <InputField<StudentFormData>
-          label="Birth Date"
-          name="birthDate"
-          register={register}
-          error={errors}
-          placeholder="Birth Date"
-          type="date"
-          defaultValue={data?.birthDate?.toString()}
-        />
       </div>
       <div className="flex justify-between flex-wrap gap-4">
-      <div className="flex flex-col gap-2 w-ful md:w-1/4">
-        <label>{"Gender"}</label>
-        <select
-          {...register("gender")}
-          className="ring-[1.5px] ring-gray-300 rounded-md p-2"
-          defaultValue={data?.gender}
-        >
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
-        </select>
-        {errors?.gender?.message && (
-          <p className="text-red-500 text-xs">
-            {errors?.gender?.message as string}
-          </p>
-        )}
-      </div>
-
-      <div className="flex flex-col gap-2 w-ful md:w-1/4">
-        <label className="text-sm font-medium text-gray-500 gap-2 cursor-pointer" htmlFor="img">
-          <Image src="/upload.png" alt="upload" width={28} height={28} />
-          <span>Upload Image</span>
-        </label>
-        <input
-          id="img"
-          type="file"
-          {...register("image")}
-          className="hidden"
-          accept="image/*"
-        />
-        {errors?.image?.message && (
-          <p className="text-red-500 text-xs">
-            {errors?.image?.message as string}
-          </p>
-        )}
-      </div>
+        <div className="flex flex-col gap-2 w-ful md:w-1/4">
+          <label>{"Gender"}</label>
+          <select
+            {...register("gender")}
+            className="ring-[1.5px] ring-gray-300 rounded-md p-2"
+            defaultValue={data?.gender}
+          >
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+          {errors?.gender?.message && (
+            <p className="text-red-500 text-xs">{errors?.gender?.message as string}</p>
+          )}
+        </div>
+        <div className="flex flex-col gap-2 w-ful md:w-1/4">
+          <CldUploadWidget
+            uploadPreset="schoolbee"
+            onSuccess={(result: CloudinaryUploadWidgetResults) => {
+              if (typeof result.info === 'object' && result.info?.secure_url) {
+                setImg(result.info.secure_url);
+              }
+              const widget = document.querySelector('.cloudinary-upload-widget') as HTMLElement;
+              if (widget) {
+                widget.style.display = 'none';
+              }
+            }}
+          >
+            {({ open }) => (
+              <div
+                className="text-sm font-medium text-gray-500 gap-2 cursor-pointer"
+                onClick={() => open()}
+              >
+                <Image src="/upload.png" alt="upload" width={28} height={28} />
+                <span>Upload Image</span>
+              </div>
+            )}
+          </CldUploadWidget>
+          {errors?.image?.message && (
+            <p className="text-red-500 text-xs">{errors?.image?.message as string}</p>
+          )}
+        </div>
       </div>
       <button
         type="submit"

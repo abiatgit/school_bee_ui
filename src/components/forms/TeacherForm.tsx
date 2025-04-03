@@ -50,7 +50,9 @@ const initialState = {
   success: false,
   error: false,
 };
+
 type TeacherFormData = z.infer<typeof Teacherschema>;
+
 export default function TeacherForm({
   type,
   data,

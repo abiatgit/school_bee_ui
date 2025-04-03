@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 // import TeacherForm from "./forms/TeacherForm";
 import dynamic from "next/dynamic";
-import { deleteClass, deleteSubject, deleteTeacher } from "@/lib/serverAction";
+import { deleteClass, deleteSubject, deleteTeacher,deleteStudent } from "@/lib/serverAction";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { FormModelProps } from "./FormContainer";
@@ -13,7 +13,7 @@ const deleteActionMap = {
   subject: deleteSubject,
   class: deleteClass,
   teacher: deleteTeacher,
-  student: deleteTeacher,
+  student: deleteStudent,
   // class: deleteClass,
   // parent: deleteParent,
   // announcement: deleteAnnouncement,
@@ -136,10 +136,10 @@ const FormModel = ({
       if (state.success) {
         setOpen(false);
         router.refresh();
-        toast.success(`Subject Has been Deleted`, { toastId: "success" });
+        toast.success(`${table.charAt(0).toUpperCase() + table.slice(1)} has been deleted`, { toastId: "success" });
       }
       if (state.error) {
-        toast.error("Failed to Delete subject.", { toastId: "error" });
+        toast.error(`Failed to delete ${table}.`, { toastId: "error" });
       }
     }, [state.success, state.error]);
 

@@ -5,12 +5,21 @@ import AttendanceChartContainer from "@/components/AttendanceChartContainer";
 import FinanceChart from "@/components/FinanceChart";
 import EventCalenderContainer from "@/components/EventCalenderContainer";
 import AnnouncementsContainer from "@/components/AnnouncementsContainer";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 type AdminPageProps = {
   searchParams: { date?: string }
 }
 
 const AdminPage = async ({ searchParams }: AdminPageProps) => {
+  const { sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role: string })?.role;
+
+  if (role !== "admin") {
+    redirect("/");
+  }
+
   return (
     <div className="p-4 flex gap-4 flex-col md:flex-row">
       {/* Left */}
