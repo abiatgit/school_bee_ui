@@ -14,28 +14,23 @@ import { CldUploadWidget } from "next-cloudinary";
 export const Teacherschema = z.object({
   id: z.string().optional(),
   username: z
-    .string()
-    .min(3, { message: "Username must be at least 3 characters" })
-    .max(20, { message: "Username must be at most 20 characters" }),
+    .string(),
+    
   name: z
     .string()
-    .min(1, { message: "Name must be at least 1 character" })
-    .max(20, { message: "Name must be at most 20 characters" }),
+    ,
   surname: z
     .string()
-    .min(1, { message: "Surname must be at least 1 character" })
-    .max(20, { message: "Surname must be at most 20 characters" }),
+   ,
   email: z.string().email({ message: "Invalid email address" }).nullable().optional(),
   password:z.string().optional(),
   phone: z
     .string()
-    .min(10, { message: "Phone number must be at least 10 characters" })
-    .max(15, { message: "Phone number must be at most 15 characters" })
     .nullable()
     .optional(),
   image: z.string().optional(),
   bloodGroup: z.string().min(1, { message: "Blood group is required" }),
-  gender: z.enum(["male", "female", "other"], { message: "Invalid gender" }),
+  gender: z.enum(["male", "female"], { message: "Invalid gender" }),
   address: z
     .string()
     .min(3, { message: "Address must be at least 3 characters" })
@@ -93,6 +88,7 @@ const [img,setImg]=useState<any>()
     initialState
   );
 const {subjects}=relatedData
+
   useEffect(() => {
     if (state.success) {
       setOpen(false);

@@ -1,13 +1,13 @@
-import Pagination from "@/components/Pagination";
+ import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import Image from "next/image";
 import React from "react";
-import FormModel from "@/components/FormModel";
 import { Class, Exam, Prisma, Subject, Teacher } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { PAGE_NUMBER, PAGE_SIZE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
+import FormContainer from "@/components/FormContainer";
 
 type ExamType = Exam & {
   lesson: { Subject: Subject; Class: Class; teacher: Teacher };
@@ -47,6 +47,8 @@ const ExamsListPage = async ({
       : baseColumns;
 
   const examRow = (item: ExamType) => {
+    console.log("ITEM ITEM",item)
+
     return (
       <tr
         key={item.id}
@@ -55,7 +57,7 @@ const ExamsListPage = async ({
         <td className="flex items-center gap-2 p-4">
           <div className="flex flex-col">
             <h3 className="text-sm font-semibold">
-              {item.lesson.Subject.name}
+              {item.title}
             </h3>
           </div>
         </td>
@@ -68,13 +70,13 @@ const ExamsListPage = async ({
           <div className="flex items-center gap-2">
             {(role === "admin" || role === "teacher") && (
               <>
-                <FormModel
+                <FormContainer
                   table="exam"
                   type="delete"
                   data={item}
                   id={item.id.toString()}
                 />
-                <FormModel table="exam" type="update" data={item} />
+                <FormContainer table="exam" type="update" data={item} />
               </>
             )}
           </div>
@@ -171,7 +173,7 @@ switch(role){
                 <Image src="/sort.png" alt="add" width={14} height={14} />
               </button>
               {(role === "admin" || role === "teacher") && (
-                <FormModel table="exam" type="create" />
+                <FormContainer table="exam" type="create" />
               )}
             </div>
           </div>

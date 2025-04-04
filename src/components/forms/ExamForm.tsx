@@ -1,150 +1,140 @@
 "use client";
-import { z } from "zod";
+import { number, z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputField from "../InputField";
+// import { Dispatch, SetStateAction, startTransition, useActionState, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect } from "react";
+import { createExam, updateExam } from "@/lib/serverAction";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const schema = z.object({
-  name: z
+export const Examschema = z.object({
+  id:number(),
+  title: z.string().min(1, { message: "Exam title is required" }),
+  startTime: z
     .string()
-    .min(1, { message: "Exam name is required" })
-    .max(50, { message: "Exam name must be less than 50 characters" }),
-  subject: z
+    .transform((val) => new Date(val))
+    .refine((val) => !isNaN(val.getTime()), { message: "Invalid start time" }),
+  endTime: z
     .string()
-    .min(1, { message: "Subject is required" }),
-  date: z.date({
-    required_error: "Date is required",
-  }),
-  startTime: z.string().min(1, { message: "Start time is required" }),
-  duration: z
-    .number()
-    .min(1, { message: "Duration must be at least 1 minute" }),
-  totalMarks: z
-    .number()
-    .min(1, { message: "Total marks must be at least 1" }),
-  classLevel: z
+    .transform((val) => new Date(val))
+    .refine((val) => !isNaN(val.getTime()), { message: "Invalid end time" }),
+  lessonId: z
     .string()
-    .min(1, { message: "Class level is required" }),
-  description: z
-    .string()
-    .min(1, { message: "Description is required" })
-    .max(500, { message: "Description must be less than 500 characters" })
+    .min(1, { message: "Lesson is required" })
+    .transform((val) => parseInt(val, 10)),
 });
 
-type ExamFormData = z.infer<typeof schema>;
+
+type ExamFormData = z.infer<typeof Examschema>;
 
 export default function ExamForm({
   type,
   data,
+  setOpen,
+  relatedData,
 }: {
   type: "create" | "update";
   data?: Partial<ExamFormData>;
+  setOpen: (open: boolean) => void;
+  relatedData: any;
 }) {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<ExamFormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(Examschema),
+    defaultValues: data,
   });
+  const { lessons } = relatedData;
 
-  const onSubmit = handleSubmit((data: ExamFormData) => {
-    console.log(data);
+
+  const [state, formAction] = useActionState(
+    (state: { success: boolean; error: boolean }, formData: ExamFormData) =>
+      type === "create"
+        ? createExam(state, formData,data)
+        : updateExam(state, formData),
+    { success: false, error: false }
+  );
+  useEffect(() => {
+    if (state.success) {
+      setOpen(false);
+      router.refresh();
+      toast.success(
+        `Student has been ${type === "create" ? "Created" : "Updated"}`,
+        {
+          toastId: "success",
+        }
+      );
+    }
+    if (state.error) {
+      toast.error("Failed to update student.", { toastId: "error" });
+    }
+  }, [state.success, state.error]);
+
+  const onSubmit = handleSubmit((data) => {
+    formAction(data);
   });
-
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-2xl font-bold">
         {type === "create" ? "Create an Exam" : "Update Exam"}
       </h1>
-
       <div className="flex justify-between flex-wrap gap-4">
         <InputField<ExamFormData>
           label="Exam Name"
-          name="name"
+          name="title"
           register={register}
-          error={errors}
           placeholder="Enter exam name"
           type="text"
-          defaultValue={data?.name}
-        />
-
-        <InputField<ExamFormData>
-          label="Subject"
-          name="subject" 
-          register={register}
+          defaultValue={data?.lesson.Subject.name}
           error={errors}
-          placeholder="Enter subject"
-          type="text"
-          defaultValue={data?.subject}
         />
 
-        <InputField<ExamFormData>
-          label="Class Level"
-          name="classLevel"
-          register={register}
-          error={errors}
-          placeholder="Enter class level"
-          type="text"
-          defaultValue={data?.classLevel}
-        />
-      </div>
-
-      <div className="flex justify-between flex-wrap gap-4">
-        <InputField<ExamFormData>
-          label="Date"
-          name="date"
-          register={register}
-          error={errors}
-          placeholder="Enter date"
-          type="date"
-          defaultValue={data?.date?.toString()}
-        />
-
-        <InputField<ExamFormData>
-          label="Start Time"
+        <InputField
+          label="Start Date"
           name="startTime"
+          defaultValue={data?.startTime?.toISOString().slice(0, 16)}
           register={register}
           error={errors}
+          type="datetime-local"
           placeholder="Enter start time"
-          type="time"
-          defaultValue={data?.startTime}
         />
-
-        <InputField<ExamFormData>
-          label="Duration (minutes)"
-          name="duration"
+        <InputField
+          label="End Date"
+          name="endTime"
+          defaultValue={data?.endTime?.toISOString().slice(0, 16)}
           register={register}
           error={errors}
-          placeholder="Enter duration in minutes"
-          type="number"
-          defaultValue={data?.duration?.toString()}
+          type="datetime-local"
+          placeholder="Enter end time"
         />
-      </div>
 
-      <div className="flex justify-between flex-wrap gap-4">
-        <InputField<ExamFormData>
-          label="Total Marks"
-          name="totalMarks"
-          register={register}
-          error={errors}
-          placeholder="Enter total marks"
-          type="number"
-          defaultValue={data?.totalMarks?.toString()}
-        />
-      </div>
-
-      <div className="flex flex-col gap-2 w-full">
-        <label>Description</label>
-        <textarea
-          {...register("description")}
-          className="ring-[1.5px] ring-gray-300 rounded-md p-2 min-h-[100px]"
-          placeholder="Enter exam description"
-          defaultValue={data?.description}
-        />
-        {errors?.description?.message && (
-          <p className="text-red-500 text-xs">{errors.description.message}</p>
+        {data && (
+          <InputField
+            label="Id"
+            name="id"
+            defaultValue={data?.id?.toString()}
+            register={register}
+            error={errors}
+            hidden
+            type="text"
+            placeholder="Exam ID"
+          />
         )}
+        <select {...register("lessonId")} className="border rounded-md p-2">
+          <option value="">Select a Lesson</option>
+          {relatedData?.lessons?.map((lesson:any) => (
+            <option key={lesson.id} value={lesson.id}>
+              {lesson.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <button

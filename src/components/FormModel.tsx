@@ -2,25 +2,25 @@
 import React, { startTransition, useActionState, useEffect } from "react";
 import Image from "next/image";
 import { useState } from "react";
-// import TeacherForm from "./forms/TeacherForm";
 import dynamic from "next/dynamic";
-import { deleteClass, deleteSubject, deleteTeacher,deleteStudent } from "@/lib/serverAction";
+import { deleteClass, deleteSubject, deleteTeacher,deleteStudent,deleteParent, deleteExam } from "@/lib/serverAction";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { FormModelProps } from "./FormContainer";
+// import TeacherForm from "./forms/TeacherForm";
 
 const deleteActionMap = {
   subject: deleteSubject,
   class: deleteClass,
   teacher: deleteTeacher,
   student: deleteStudent,
+  exam: deleteExam,
+  parent: deleteParent,
   // class: deleteClass,
-  // parent: deleteParent,
   // announcement: deleteAnnouncement,
   // event: deleteEvent,
   // lesson: deleteLesson,
   // result: deleteResult,
-  // exam: deleteExam,
   // assignment: deleteAssignment,
   // attendance: deleteAttendance,
 };
@@ -37,6 +37,10 @@ const TeacherForm = dynamic(() => import("./forms/TeacherForm"), {
 const StudentForm = dynamic(() => import("./forms/StudentForm"), {
   loading: () => <div>Loading...</div>,
 });
+const ExamForm = dynamic(() => import("./forms/ExamForm"), {
+  loading: () => <div>Loading...</div>,
+});
+
 // const ParentForm = dynamic(() => import("./forms/ParentForm"), {
 //   loading: () => <div>Loading...</div>,
 // });
@@ -50,9 +54,6 @@ const StudentForm = dynamic(() => import("./forms/StudentForm"), {
 //   loading: () => <div>Loading...</div>,
 // });
 // const LessonForm = dynamic(() => import("./forms/LessonForm"), {
-//   loading: () => <div>Loading...</div>,
-// });
-// const ExamForm = dynamic(() => import("./forms/ExamForm"), {
 //   loading: () => <div>Loading...</div>,
 // });
 // const AssignmentForm = dynamic(() => import("./forms/AssignmentForm"), {
@@ -76,29 +77,37 @@ const forms: {
   teacher: (type, relatedData, data, setOpen) => (
     <TeacherForm type={type}   relatedData={relatedData} data={data} setOpen={setOpen!} />
   ),
-  student: (type, relatedData, data,setOpen) => <StudentForm type={type} data={data} setOpen={setOpen!}/>,
-  // parent: (type, relatedData, data,setOpen) => <ParentForm type={type} data={data} setOpen={setOpen!} relatedData={relatedData}/>,
+  student: (type, relatedData, data,setOpen) => 
+    (<StudentForm type={type} data={data} setOpen={setOpen!}/>),
   class: (type, relatedData, data, setOpen) => (
     <ClassForm
-      type={type}
-      data={data}
-      setOpen={setOpen!}
-      relatedData={relatedData}
+    type={type}
+    data={data}
+    setOpen={setOpen!}
+    relatedData={relatedData}
     />
   ),
   subject: (type, relatedData, data, setOpen) => (
     <SubjectForm
-      type={type}
-      data={data}
-      setOpen={setOpen!}
-      relatedData={relatedData}
+    type={type}
+    data={data}
+    setOpen={setOpen!}
+    relatedData={relatedData}
     />
   ),
+  exam: (type, relatedData, data, setOpen) => (
+    <ExamForm 
+      type={type} 
+      data={data} 
+      setOpen={setOpen!} 
+      relatedData={relatedData} 
+    />
+  ),
+  // parent: (type, relatedData, data,setOpen) => <ParentForm type={type} data={data} setOpen={setOpen!} relatedData={relatedData}/>,
   // announcement: (type, relatedData, data) => <AnnouncementForm type={type} data={data} />,
   // attendance: (type, relatedData, data) => <AttendanceForm type={type} data={data} />,
   // submit: (type, relatedData, data) => <SubmitForm type={type} data={data} />,
   // lesson: (type, relatedData, data) => <LessonForm type={type} data={data} />,
-  // exam: (type, relatedData, data) => <ExamForm type={type} data={data} />,
   // assignment: (type, relatedData, data) => <AssignmentForm type={type} data={data} />,
   // result: (type, relatedData, data) => <ResultForm type={type} data={data} />,
   // event: (type, relatedData, data) => <EventForm type={type} data={data} />,
@@ -111,6 +120,7 @@ const FormModel = ({
   id,
   relatedData,
 }: FormModelProps & { relatedData: any }) => {
+ 
   const size = type === "create" ? "w-8 h-8" : "w-7 h-7";
   const bgColor =
     type === "create"

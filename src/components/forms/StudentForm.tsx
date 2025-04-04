@@ -4,20 +4,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputField from "../InputField";
 import { CldUploadWidget, CloudinaryUploadWidgetResults } from "next-cloudinary";
-import { Dispatch, SetStateAction, startTransition, useActionState, useEffect, useState } from "react";
+import {  useActionState, useEffect, useState } from "react";
 import Image from "next/image";
 import { createStudent, updateStudent } from "@/lib/serverAction";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
-type CloudinaryResult = {
-  info?: {
-    secure_url?: string;
-  };
-  widget?: {
-    close: () => void;
-  };
-};
+
 
 const schema = z.object({
   id: z.string().optional(),
@@ -123,7 +116,6 @@ export default function StudentForm({
           type="text"
           defaultValue={data?.username}
         />
-
         <InputField<StudentFormData>
           label="Email"
           name="email"

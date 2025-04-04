@@ -44,7 +44,7 @@ const ClassesListPage = async ({
     ? [...baseColumns, { headers: "Actions", accessor: "actions" }]
     : baseColumns;
 
-  const classRow = (item: ClassType) => {
+  const classRow = (item: any) => {
     return (
       <tr
         key={item.id}
@@ -54,11 +54,11 @@ const ClassesListPage = async ({
         <td className="hidden md:table-cell">{item.capacity}</td>
         <td className="hidden md:table-cell">{item.title[0]}</td>
         <td className="hidden md:table-cell">
-          {item.superVisor.name + " " + item.superVisor.surname}
+          {item.superVisor ? `${item.superVisor.name} ${item.superVisor.surname}` : "Not Assigned"}
         </td>
         <td>
           <div className="flex items-center gap-2">
-            {role === "admin" && (
+            {(role === "admin" || role ==="teacher" )&& (
               <>
                 <FormContainer table="class" type="update" data={item} />
                 <FormContainer

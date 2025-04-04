@@ -49,7 +49,6 @@ model Teacher {
   subjects  Subject[]
   lessons   Lesson[]
   classes   Class[]
-
 }
 
 model Parent {

@@ -1,12 +1,16 @@
+
 "use server";
 import { Teacherschema } from './../components/forms/TeacherForm';
-import { z } from 'zod';
+import {  z } from 'zod';
 import { revalidatePath } from "next/cache";
 import prisma from "./prisma";
 import { clerkClient } from '@clerk/nextjs/server';
 import { Gender } from '@prisma/client';
+import ParentForm from '@/components/forms/ParentForm';
+import { Examschema } from '@/components/forms/ExamForm';
 
 type TeacherFormData = z.infer<typeof Teacherschema>;
+type ExamFormData=z.infer<typeof Examschema>
 
 export const createSubject = async (state: { success: boolean; error: boolean }, formData: { name: string; teachers: string[] }) => {
   try {
@@ -291,7 +295,7 @@ export const deleteClass = async (state: { success: boolean; error: boolean }, f
         console.log("Clerk deletion failed, but teacher was deleted from database");
       }
 
-    
+    ParentForm
       return { success: true, error: false };
     } catch (error) {
       console.error("Error deleting teacher:", error);
@@ -480,6 +484,159 @@ export const deleteStudent = async (state: { success: boolean; error: boolean },
     return { success: true, error: false };
   } catch (error) {
     console.error("Error deleting student:", error);
+    return { success: false, error: true };
+  }
+};
+
+export const createParent = async (data: any) => {
+  try {
+    const { email, password, ...parentData } = data;
+    
+    // Create user in Clerk
+    const clerk = await clerkClient();
+    const clerkUser = await clerk.users.createUser({
+      emailAddress: [email],
+      password,
+      publicMetadata: {
+        role: "parent",
+      },
+    });
+
+    // Create parent in database
+    const parent = await prisma.parent.create({
+      data: {
+        ...parentData,
+        clerkId: clerkUser.id,
+      },
+    });
+
+    return { success: true, data: parent };
+  } catch (error: any) {
+    console.error("Error creating parent:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const updateParent = async (id: string, data: any) => {
+  try {
+    const { email, password, ...parentData } = data;
+    
+    // Update parent in database
+    const parent = await prisma.parent.update({
+      where: { id },
+      data: parentData,
+    });
+
+    // If email is being updated, update it in Clerk too
+    if (email) {
+      const clerk = await clerkClient();
+      await clerk.users.updateUser(parent.clerkId, {
+        primaryEmailAddressID: email,
+      });
+    }
+
+    return { success: true, data: parent };
+  } catch (error: any) {
+    console.error("Error updating parent:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const deleteParent = async (id: string) => {
+
+  try {
+    // Check if parent exists
+    const parent = await prisma.parent.findUnique({
+      where: { id },
+    });
+
+    if (!parent) {
+      console.log("No parent found with ID:", id);
+      return { success: false, error: "No parent found with this ID" };
+    }
+
+    // Delete related records first
+    await prisma.student.updateMany({
+      where: { parentId: id },
+      data: { parentId: null },
+    });
+
+    // Delete parent from database
+    await prisma.parent.delete({
+      where: { id },
+    });
+
+    // Try to delete from Clerk, but don't fail if it doesn't work
+    try {
+      const clerk = await clerkClient();
+      await clerk.users.deleteUser(parent.clerkId);
+    } catch (clerkError) {
+      console.log("Failed to delete parent from Clerk:", clerkError);
+    }
+
+    revalidatePath("/list/parents");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error deleting parent:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const createExam = async (state: { success: boolean; error: boolean },formData:ExamFormData,data:ExamFormData) => {
+  try {
+    await prisma.exam.create({
+      data: {
+        title: formData.title,
+        startTime: formData.startTime,
+        endTime:formData.endTime,
+        lessonId: formData.id
+      },
+      // teachers:{
+      //   set:formData.
+      // }
+    }); 
+    
+    return { success: true, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: true };
+  }
+};
+
+export const updateExam = async (state: { success: boolean; error: boolean }, formData:ExamFormData) => {
+  console.log("updateExam",formData)
+  try {
+    await prisma.exam.update({
+      where: {
+        id:formData.id
+      },
+      data: {
+        title: formData.title,
+        startTime: formData.startTime,
+        endTime:formData.endTime,
+        lessonId: formData.id
+      },
+    }); 
+
+    return { success: true, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: true };
+  }
+};
+  
+export const deleteExam = async (state: { success: boolean; error: boolean }, formData: { id: string }) => {
+  try {
+    // Delete exam
+    await prisma.exam.delete({
+      where: {
+        id: parseInt(formData.id)
+      }
+    });
+  
+    return { success: true, error: false };
+  } catch (err) {
+    console.log("Error deleting exam:", err);
     return { success: false, error: true };
   }
 };

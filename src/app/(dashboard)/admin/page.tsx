@@ -51,7 +51,7 @@ const AdminPage = async ({ searchParams }: AdminPageProps) => {
       {/* Right */}
       <div className="w-full lg:w-1/3 flex flex-col gap-8">
         <EventCalenderContainer date={searchParams.date} />
-        <AnnouncementsContainer />
+        <AnnouncementsContainer/>
       </div>
     </div>
   );

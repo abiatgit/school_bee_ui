@@ -8,6 +8,7 @@ import { Parent, Prisma, Student } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { PAGE_NUMBER, PAGE_SIZE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
+import FormContainer from "@/components/FormContainer";
 
 type ParentList = Parent & { Students: Student[] };
 
@@ -66,14 +67,14 @@ const ParentsListPage = async ({
           <div className="flex items-center gap-2">
             {role === "admin" ? (
               <>
-                <FormModel
+                <FormContainer
                   table="parent"
                   type="update"
                   data={item}
                   id={item.id.toString()}
                 />
 
-                <FormModel
+                <FormContainer
                   table="parent"
                   type="delete"
                   data={item}

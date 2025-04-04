@@ -6,34 +6,30 @@ import InputField from "../InputField";
 import Image from "next/image";
 
 const schema = z.object({
-  username: z
-    .string()
-    .min(3, { message: "Username  must be 3 characters" })
-    .max(20, { message: "Username  must be 20 characters" }),
-  age: z.number().min(10),
+  username: z.string()
+    .min(3, { message: "Username must be at least 3 characters" })
+    .max(20, { message: "Username must be at most 20 characters" }),
+  age: z.number().min(10, { message: "Age must be at least 10" }),
   email: z.string().email({ message: "Invalid email address" }),
-  password: z.string().min(8, { message: "Password must be 8 characters" }),
-  firstName: z
-    .string()
-    .min(1, { message: "First name must be 1 characters" })
-    .max(20, { message: "First name must be 20 characters" }),
-  lastName: z
-    .string()
-    .min(1, { message: "Last name must be 1 characters" })
-    .max(20, { message: "Last name must be 20 characters" }),
-  phone: z
-    .string()
-    .min(10, { message: "Phone must be 10 characters" })
-    .max(15, { message: "Phone must be 15 characters" }),
-  address: z
-    .string()
-    .min(3, { message: "Address must be 3 characters" })
-    .max(50, { message: "Address must be 50 characters" }),
+  password: z.string().min(8, { message: "Password must be at least 8 characters" }),
+  firstName: z.string()
+    .min(1, { message: "First name must have at least 1 character" })
+    .max(20, { message: "First name must be at most 20 characters" }),
+  lastName: z.string()
+    .min(1, { message: "Last name must have at least 1 character" })
+    .max(20, { message: "Last name must be at most 20 characters" }),
+  phone: z.string()
+    .min(10, { message: "Phone number must be at least 10 digits" })
+    .max(15, { message: "Phone number must be at most 15 digits" }),
+  address: z.string()
+    .min(3, { message: "Address must be at least 3 characters" })
+    .max(50, { message: "Address must be at most 50 characters" }),
   gender: z.enum(["male", "female", "other"], { message: "Invalid gender" }),
-  birthDate: z.date(),
+  birthDate: z.preprocess((val) => new Date(val), z.date()),
   bloodGroup: z.string().min(1, { message: "Blood group is required" }),
-  image: z.instanceof(File, { message: "Image is required" }),
+  image: z.string().url({ message: "Image must be a valid URL" }).optional(), // Instead of File
 });
+
 
 type ParentFormData = z.infer<typeof schema>;
 
