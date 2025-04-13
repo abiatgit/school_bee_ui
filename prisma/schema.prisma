@@ -24,8 +24,8 @@ model Student {
   image       String?
   gender      Gender
   createdAt   DateTime     @default(now())
-  parentId    String
-  Parents     Parent       @relation(fields: [parentId], references: [id])
+  parentId    String?
+  Parents     Parent ?      @relation(fields: [parentId], references: [id])
   classId     Int
   class       Class        @relation(fields: [classId], references: [id])
   gradeId     Int

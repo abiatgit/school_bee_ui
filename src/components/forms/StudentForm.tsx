@@ -3,9 +3,9 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputField from "../InputField";
-import { CldUploadWidget, CloudinaryUploadWidgetResults } from "next-cloudinary";
-import {  useActionState, useEffect, useState } from "react";
-import Image from "next/image";
+// import { CldUploadWidget, CloudinaryUploadWidgetResults } from "next-cloudinary";
+import {  useActionState, useEffect, useState, } from "react";
+// import Image from "next/image";
 import { createStudent, updateStudent } from "@/lib/serverAction";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -37,9 +37,12 @@ const schema = z.object({
     .string()
     .min(3, { message: "Address must be 3 characters" })
     .max(50, { message: "Address must be 50 characters" }),
-  gender: z.enum(["male", "female", "other"], { message: "Invalid gender" }),
+  gender: z.enum(["male", "female"], { message: "Invalid gender" }),
   bloodGroup: z.string().min(1, { message: "Blood group is required" }),
   image: z.string().optional(),
+  gradeId:z.coerce.number().min(1,{message:"grade is required"}),
+  classId:z.coerce.number().min(1,{message:"Grade is required"}),
+  parentId:z.string().min(1,{message:"Parent id is required"})
 });
 type StudentFormData = z.infer<typeof schema>;
 
@@ -47,13 +50,18 @@ export default function StudentForm({
   type,
   data,
   setOpen,
+  relatedData
 }: {
   type: "create" | "update";
   data?: Partial<StudentFormData>;
   setOpen: (open: boolean) => void;
+  relatedData?:any
 }) {
   const router = useRouter();
-  const [img, setImg] = useState<string | undefined>(data?.image);
+  // const [img, setImg] = useState<string | undefined>(data?.image);
+  console.log("Data",data)
+  const{grades,class:classData}=relatedData
+ 
 
   const {
     register,
@@ -64,8 +72,7 @@ export default function StudentForm({
     defaultValues: data
   });
 
-  const [state, formAction] = useActionState(
-    (state: { success: boolean; error: boolean }, formData: StudentFormData) =>
+  const [state, formAction] = useActionState((state: { success: boolean; error: boolean }, formData: StudentFormData) =>
       type === "create" ? createStudent(state, formData) : updateStudent(state, formData),
     { success: false, error: false }
   );
@@ -84,8 +91,8 @@ export default function StudentForm({
   }, [state.success, state.error]);
 
   const onSubmit = async (formData: StudentFormData) => {
-    console.log("Form submitted with data:", formData);
-    if (Object.keys(errors).length > 0) {
+    console.log("✅ onSubmit triggered")
+    if (Object.keys(errors).length > 0) { 
       console.log("Validation errors:", errors);
       return;
     }
@@ -174,24 +181,55 @@ export default function StudentForm({
           type="text"
           defaultValue={data?.bloodGroup}
         />
+        {
+          data&&(
+            <InputField
+            label="id"
+            name="id"
+            register={register}
+            error={errors}
+            defaultValue={data?.id}
+            hidden
+            />
+          )
+        }
       </div>
       <div className="flex justify-between flex-wrap gap-4">
         <div className="flex flex-col gap-2 w-ful md:w-1/4">
           <label>{"Gender"}</label>
           <select
+         
             {...register("gender")}
             className="ring-[1.5px] ring-gray-300 rounded-md p-2"
             defaultValue={data?.gender}
           >
             <option value="male">Male</option>
             <option value="female">Female</option>
-            <option value="other">Other</option>
           </select>
           {errors?.gender?.message && (
             <p className="text-red-500 text-xs">{errors?.gender?.message as string}</p>
           )}
         </div>
+
         <div className="flex flex-col gap-2 w-ful md:w-1/4">
+          <label>Grade</label>
+          <select
+            multiple
+            {...register("gradeId")}
+            className="ring-[1.5px] ring-gray-300 rounded-md p-2"
+            defaultValue={data?.gradeId} 
+          >
+            {grades?.map((grade: {id: number, level: string}) => (
+              <option value={grade.id} key={grade.id}>{grade.level}</option>
+            ))}
+          </select>
+          {errors?.gradeId?.message && (
+            <p className="text-red-500 text-xs">
+              {errors?.gradeId?.message as string}
+            </p>
+          )}
+        </div>
+        {/* <div className="flex flex-col gap-2 w-ful md:w-1/4">
           <CldUploadWidget
             uploadPreset="schoolbee"
             onSuccess={(result: CloudinaryUploadWidgetResults) => {
@@ -217,7 +255,7 @@ export default function StudentForm({
           {errors?.image?.message && (
             <p className="text-red-500 text-xs">{errors?.image?.message as string}</p>
           )}
-        </div>
+        </div>  */}
       </div>
       <button
         type="submit"

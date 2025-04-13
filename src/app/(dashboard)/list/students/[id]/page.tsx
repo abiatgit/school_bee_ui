@@ -1,3 +1,4 @@
+
 import AnnouncementsContainer from "@/components/AnnouncementsContainer";
 import BigCalenderContainer from "@/components/BigCalenderContainer";
 import FormContainer from "@/components/FormContainer";
@@ -16,15 +17,15 @@ type StudentWithClass = Student & {
 const SingleStudentPage = async ({ params }: { params: { id: string } }) => {
   const { sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role: string })?.role;
-  const student = await prisma.student.findUnique({
+  const student = (await prisma.student.findUnique({
     where: {
       id: params.id,
     },
     include: {
       class: true,
     },
-  }) as StudentWithClass | null;
-console.log("Fetched data",student)
+  })) as StudentWithClass | null;
+  console.log("Fetched data", student);
   if (!student) return "not found";
   return (
     <div className="flex-1 p-4 flex flex-col gap-4 xl:flex-row">
@@ -37,7 +38,8 @@ console.log("Fetched data",student)
             <div className="w-1/3">
               <Image
                 src={
-                 student.image || "https://imgs.search.brave.com/X5CsFSE3VbCLKEElurN6jMVNEX1Iv1S_46KXHEVy-FU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvNjA4/MDAyNzgwL3Bob3Rv/L2hhcHB5LXN0dWRl/bnQtYXQtdGhlLXNj/aG9vbC5qcGc_cz02/MTJ4NjEyJnc9MCZr/PTIwJmM9QUd0NjNL/TldHMnI4SlZ5MVda/NEMydmNYME45LURQ/ajZDNmJ4aFlNR3o0/OD0"
+                  student.image ||
+                  "https://imgs.search.brave.com/X5CsFSE3VbCLKEElurN6jMVNEX1Iv1S_46KXHEVy-FU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvNjA4/MDAyNzgwL3Bob3Rv/L2hhcHB5LXN0dWRl/bnQtYXQtdGhlLXNj/aG9vbC5qcGc_cz02/MTJ4NjEyJnc9MCZr/PTIwJmM9QUd0NjNL/TldHMnI4SlZ5MVda/NEMydmNYME45LURQ/ajZDNmJ4aFlNR3o0/OD0"
                 }
                 alt="teacher"
                 width={144}
@@ -51,17 +53,17 @@ console.log("Fetched data",student)
                 <FormContainer
                   table="student"
                   type="update"
-                  //   id={teacher.id}
+                  id={student.id}
                   data={{
                     id: student.id,
-                    username: student.username || "",
-                    name: student.name || "",
-                    surname: student.surname || "",
-                    email: student.email || "",
-                    phone: student.phone || "",
+                    username: student.username,
+                    name: student.name,
+                    surname: student.surname,
+                    email: student.email,
+                    phone: student.phone,
                     gender: student.gender.toLowerCase(),
-                    address: student.address || "",
-                    bloodGroup: student.bloodGroup || "",
+                    address: student.address,
+                    bloodGroup: student.bloodGroup,
                   }}
                 />
               )}
@@ -120,7 +122,7 @@ console.log("Fetched data",student)
                 height={24}
                 className="w-6 h-6"
               ></Image>
-            <StudentAttendenceCard student={student}/>
+              <StudentAttendenceCard student={student} />
             </div>
             {/* card*/}
             <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
@@ -132,8 +134,12 @@ console.log("Fetched data",student)
                 className="w-6 h-6"
               ></Image>
               <div>
-                <h1 className="text-2xl font-semibold">{student.class.title}</h1>
-                <span className="text-sm text-gray-400">Grade {student.class.gradeId}</span>
+                <h1 className="text-2xl font-semibold">
+                  {student.class.title}
+                </h1>
+                <span className="text-sm text-gray-400">
+                  Grade {student.class.gradeId}
+                </span>
               </div>
             </div>
 

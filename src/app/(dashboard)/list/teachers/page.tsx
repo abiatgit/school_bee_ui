@@ -96,6 +96,7 @@ const TeachersListPage = async ({
                 id={item.id.toString()}
               />
             )}
+            
           </div>
         </td>
       </tr>

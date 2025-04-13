@@ -122,9 +122,8 @@ export default function ExamForm({
             defaultValue={data?.id?.toString()}
             register={register}
             error={errors}
+    
             hidden
-            type="text"
-            placeholder="Exam ID"
           />
         )}
         <select {...register("lessonId")} className="border rounded-md p-2">

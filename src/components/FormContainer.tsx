@@ -24,10 +24,9 @@ export interface FormModelProps {
 }
 
 const FormContainer = async ({ table, type, id,data }: FormModelProps) => {
-  console.log("FORM DATA FOR EXAM PAGE",data)
+  console.log(`${table} dataABBBI ${type}`,data)
   let relatedData;
 
-if(type !== "delete"){
     switch (table) {
         case "subject":
           const subjectTeachers = await prisma.teacher.findMany({
@@ -61,6 +60,8 @@ if(type !== "delete"){
             select: { id: true, title: true },
           });
           relatedData = { grades: studentGrade, class: studentClass };
+     
+      
           break;
         case "exam":
     
@@ -97,15 +98,6 @@ if(type !== "delete"){
       
           break;
         case "teacher":
-        //   if (id) {
-        //     data = await prisma.teacher.findUnique({
-        //       where: { id },
-        //       include: {
-        //         subjects: true,
-        //       },
-        //     });
-        //   }
-    
           const teacherSubject = await prisma.subject.findMany({
             select: { id: true, name: true },
           });
@@ -114,7 +106,7 @@ if(type !== "delete"){
         default:
           break;
       }
-}
+
 
   return (
     <div>

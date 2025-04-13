@@ -1,5 +1,5 @@
 "use client";
-
+import { format } from 'date-fns';
 import React from "react";
 interface AnnouncementProp {
   data: {
@@ -20,8 +20,9 @@ export default function Announcements({ data = [] }: { data: any[] }) {
               {item.title}
             </h2>
             <span className="text-xs text-gray-500 bg-white rounded-md px-2 py-1">
-              {item.date.toLocaleDateString()}
-            </span>
+  {item.date && !isNaN(new Date(item.date).getTime()) ? 
+    format(new Date(item.date), 'dd/MM/yyyy') : 'Invalid date'}
+</span>
           </div>
           <p className="text-sm text-gray-500 mt-2">
             {item.description}

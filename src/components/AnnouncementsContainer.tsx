@@ -3,6 +3,7 @@ import Announcements from "./Announcements";
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { Announcement, Class, Lesson, Student } from "@prisma/client";
+import { format } from 'date-fns';
 
 type AnnouncementWithRelations = Announcement & {
   class: (Class & {
@@ -16,7 +17,7 @@ const AnnouncementsContainer = async () => {
 
   type Role = "admin" | "parent" | "teacher" | "student";
   const role = (sessionClaims?.metadata as { role: Role })?.role;
-  console.log("USER_ROLE", role);
+
   const data = await prisma.announcement.findMany({
     take: 3,
     orderBy: {
@@ -58,7 +59,7 @@ const AnnouncementsContainer = async () => {
     id: announcement.id.toString(),
     title: announcement.title,
     description: announcement.description,
-    date: announcement.date,
+    date: format(new Date(announcement.date), 'dd/MM/yyyy'),
   }));
 
   return (

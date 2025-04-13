@@ -67,7 +67,7 @@ export default function TeacherForm({
   } = useForm<TeacherFormData>({
     resolver: zodResolver(Teacherschema),
     defaultValues: {
-      id: data?.id || "",
+      id: data?.id,
       username: data?.username || "",
       name: data?.name || "",
       surname: data?.surname || "",

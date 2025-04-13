@@ -40,10 +40,9 @@ const StudentForm = dynamic(() => import("./forms/StudentForm"), {
 const ExamForm = dynamic(() => import("./forms/ExamForm"), {
   loading: () => <div>Loading...</div>,
 });
-
-// const ParentForm = dynamic(() => import("./forms/ParentForm"), {
-//   loading: () => <div>Loading...</div>,
-// });
+const ParentForm = dynamic(() => import("./forms/ParentForm"), {
+  loading: () => <div>Loading...</div>,
+});
 // const AnnouncementForm = dynamic(() => import("./forms/AnnouncementForm"), {
 //   loading: () => <div>Loading...</div>,
 // });
@@ -78,7 +77,7 @@ const forms: {
     <TeacherForm type={type}   relatedData={relatedData} data={data} setOpen={setOpen!} />
   ),
   student: (type, relatedData, data,setOpen) => 
-    (<StudentForm type={type} data={data} setOpen={setOpen!}/>),
+    (<StudentForm type={type} data={data} relatedData={ relatedData} setOpen={setOpen!}/>),
   class: (type, relatedData, data, setOpen) => (
     <ClassForm
     type={type}
@@ -103,7 +102,7 @@ const forms: {
       relatedData={relatedData} 
     />
   ),
-  // parent: (type, relatedData, data,setOpen) => <ParentForm type={type} data={data} setOpen={setOpen!} relatedData={relatedData}/>,
+  parent: (type, relatedData, data,setOpen) => <ParentForm type={type} data={data} setOpen={setOpen!} relatedData={relatedData}/>,
   // announcement: (type, relatedData, data) => <AnnouncementForm type={type} data={data} />,
   // attendance: (type, relatedData, data) => <AttendanceForm type={type} data={data} />,
   // submit: (type, relatedData, data) => <SubmitForm type={type} data={data} />,
@@ -120,7 +119,7 @@ const FormModel = ({
   id,
   relatedData,
 }: FormModelProps & { relatedData: any }) => {
- 
+
   const size = type === "create" ? "w-8 h-8" : "w-7 h-7";
   const bgColor =
     type === "create"
@@ -138,6 +137,7 @@ const FormModel = ({
   const From = () => {
     const router = useRouter();
     const deleteAction = deleteActionMap[table as keyof typeof deleteActionMap];
+
     const [state, formAction] = useActionState(deleteAction, {
       success: false,
       error: false,
@@ -156,7 +156,6 @@ const FormModel = ({
     return type === "delete" && id ? (
       <form
         onSubmit={(e) => {
-          console.log("Hello form  Delete class");
           e.preventDefault();
           startTransition(() => {
             formAction({ id: id.toString() });
