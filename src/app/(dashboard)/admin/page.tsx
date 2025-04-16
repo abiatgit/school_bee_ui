@@ -8,11 +8,7 @@ import AnnouncementsContainer from "@/components/AnnouncementsContainer";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
-type AdminPageProps = {
-  searchParams: { date?: string }
-}
-
-const AdminPage = async ({ searchParams }: AdminPageProps) => {
+const AdminPage = async () => {
   const { sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role: string })?.role;
 
@@ -50,7 +46,7 @@ const AdminPage = async ({ searchParams }: AdminPageProps) => {
 
       {/* Right */}
       <div className="w-full lg:w-1/3 flex flex-col gap-8">
-        <EventCalenderContainer date={searchParams.date} />
+        <EventCalenderContainer date={searchParams?.date ?? "not provided"} />
         <AnnouncementsContainer/>
       </div>
     </div>

@@ -5,10 +5,8 @@ import { revalidatePath } from "next/cache";
 import prisma from "./prisma";
 import { clerkClient } from "@clerk/nextjs/server";
 import { Gender } from "@prisma/client";
-import ParentForm from "@/components/forms/ParentForm";
 import { Examschema } from "@/components/forms/ExamForm";
-import {ParentFormSchema} from "@/components/forms/ParentForm"
-import { error } from "console";
+import { ParentFormSchema } from "@/components/forms/ParentForm";
 
 type TeacherFormData = z.infer<typeof Teacherschema>;
 type ExamFormData = z.infer<typeof Examschema>;
@@ -60,14 +58,14 @@ export const updateSubject = async (
 
 export const deleteSubject = async (
   state: { success: boolean; error: boolean },
-  formData: { id: string }
+  id: { id: string }
 ) => {
-  console.log(formData.id);
+  console.log(id.id);
   try {
     // First check if subject exists
     const subject = await prisma.subject.delete({
       where: {
-        id: parseInt(formData.id),
+        id: parseInt(id.id),
       },
     });
     console.log(subject);
@@ -136,13 +134,13 @@ export const updateClass = async (
 
 export const deleteClass = async (
   state: { success: boolean; error: boolean },
-  formData: { id: string }
+  id: { id: string }
 ) => {
   try {
     // First check if subject exists
-    const subject = await prisma.class.delete({
+    await prisma.class.delete({
       where: {
-        id: parseInt(formData.id),
+        id: parseInt(id.id),
       },
     });
 
@@ -157,7 +155,7 @@ export const createTeacher = async (
   state: { success: boolean; error: boolean },
   formData: TeacherFormData
 ) => {
-  console.log("creating a teacher ",formData)
+  console.log("creating a teacher ", formData);
   const genderValue = formData.gender.toUpperCase();
   const clerk = await clerkClient();
   try {
@@ -196,12 +194,10 @@ export const createTeacher = async (
   }
 };
 
-
 export const updateTeacher = async (
   state: { success: boolean; error: boolean },
   formData: TeacherFormData
 ) => {
-
   const genderValue = formData.gender.toUpperCase();
   const clerk = await clerkClient();
   try {
@@ -227,7 +223,7 @@ export const updateTeacher = async (
         lastName: formData.surname,
       });
     } catch (clerkError) {
-      console.warn("Clerk user not found, skipping Clerk update.");
+      console.warn("Clerk user not found, skipping Clerk update.",clerkError);
     }
 
     // Always update DB
@@ -261,57 +257,59 @@ export const updateTeacher = async (
 
 export const deleteTeacher = async (
   state: { success: boolean; error: boolean },
-  formData: { id: string }
+  id: { id: string }
 ) => {
+  console.log("trying to delete teacher")
   try {
     // First check if teacher exists
     const existingTeacher = await prisma.teacher.findUnique({
       where: {
-        id: formData.id,
+        id: id.id,
       },
     });
-
+    console.log("trying to delete teacher",existingTeacher)
     if (!existingTeacher) {
-      console.log("No teacher found with ID:", formData.id);
+      console.log("No teacher found with ID:", id.id);
       return { success: false, error: true };
     }
 
     // First delete related records
     try {
+         // Delete assignments
+         await prisma.assignment.deleteMany({
+          where: {
+            teacherId: id.id,
+          },
+        });
       // Delete lessons
       await prisma.lesson.deleteMany({
         where: {
-          teacherId: formData.id,
+          teacherId: id.id,
         },
       });
 
       // Delete results
       await prisma.result.deleteMany({
         where: {
-          teacherId: formData.id,
+          teacherId: id.id,
         },
       });
 
-      // Delete assignments
-      await prisma.assignment.deleteMany({
-        where: {
-          teacherId: formData.id,
-        },
-      });
+   
 
       // Remove teacher from subjects
       await prisma.subject.updateMany({
         where: {
           Teachers: {
             some: {
-              id: formData.id,
+              id: id.id,
             },
           },
         },
         data: {
           Teachers: {
             disconnect: {
-              id: formData.id,
+              id: id.id,
             },
           },
         },
@@ -324,7 +322,7 @@ export const deleteTeacher = async (
     // Delete from database
     await prisma.teacher.delete({
       where: {
-        id: formData.id,
+        id: id.id,
       },
     });
 
@@ -334,11 +332,10 @@ export const deleteTeacher = async (
       await clerk.users.deleteUser(existingTeacher.id);
     } catch (error) {
       console.log(
-        "Clerk deletion failed, but teacher was deleted from database"
+        "Clerk deletion failed, but teacher was deleted from database",error
       );
     }
 
-    ParentForm;
     return { success: true, error: false };
   } catch (error) {
     console.error("Error deleting teacher:", error);
@@ -346,7 +343,6 @@ export const deleteTeacher = async (
   }
 };
 
-// STUDNET DATA MANIPULATION
 export const createStudent = async (
   state: { success: boolean; error: boolean },
   formData: TeacherFormData
@@ -439,7 +435,7 @@ export const updateStudent = async (
         lastName: formData.surname,
       });
     } catch (clerkError) {
-      console.log("Clerk update failed, continuing with database update");
+      console.log("Clerk update failed, continuing with database update",clerkError);
     }
 
     // Update Prisma student
@@ -469,48 +465,40 @@ export const updateStudent = async (
 
 export const deleteStudent = async (
   state: { success: boolean; error: boolean },
-  formData: { id: string }
+  id: { id: string }
 ) => {
   try {
-    console.log("Attempting to delete student with ID:", formData.id);
-
-    // First check if student exists
     const existingStudent = await prisma.student.findUnique({
       where: {
-        id: formData.id,
+        id: id.id,
       },
     });
 
     if (!existingStudent) {
-      console.log("No student found with ID:", formData.id);
       return { success: false, error: true };
     }
-
-    // First delete related records
     try {
-      // Delete results
       await prisma.result.deleteMany({
         where: {
-          studentId: formData.id,
+          studentId: id.id,
         },
       });
 
       // Delete attendance records
       await prisma.attendance.deleteMany({
         where: {
-          studentId: formData.id,
+          studentId: id.id,
         },
       });
 
       // Delete assignments
       await prisma.assignment.deleteMany({
         where: {
-          studentId: formData.id,
+          studentId: id.id,
         },
       });
     } catch (error) {
       console.log("Error deleting related records:", error);
-      // Continue with deletion even if related records fail
     }
 
     try {
@@ -519,19 +507,17 @@ export const deleteStudent = async (
       await clerk.users.deleteUser(existingStudent.id);
     } catch (clerkError) {
       console.log(
-        "Failed to delete student from Clerk, continuing with database deletion"
+        "Failed to delete student from Clerk, continuing with database deletion",
+        clerkError
       );
     }
 
     // Finally delete the student
     await prisma.student.delete({
       where: {
-        id: formData.id,
+        id: id.id,
       },
     });
-
-    console.log("Successfully deleted student with ID:", formData.id);
-
     return { success: true, error: false };
   } catch (error) {
     console.error("Error deleting student:", error);
@@ -539,15 +525,20 @@ export const deleteStudent = async (
   }
 };
 
-export const createParent = async (state: { success: boolean; error: boolean },formData:ParentFormSchema) => {
- console.log(formData)
- return{success:true,error:false}
+export const createParent = async (
+  state: { success: boolean; error: boolean },
+  formData: ParentFormSchema
+) => {
+  console.log(formData);
+  return { success: true, error: false };
 };
 
-export const updateParent = async ( state: { success: boolean; error: boolean },
-  formData: ParentFormSchema) => {
-    console.log(formData)
-    return{success:true,error:false}
+export const updateParent = async (
+  state: { success: boolean; error: boolean },
+  formData: ParentFormSchema
+) => {
+  console.log(formData);
+  return { success: true, error: false };
   // try {
   //   const { email, password, ...parentData } = data;
 
@@ -572,26 +563,29 @@ export const updateParent = async ( state: { success: boolean; error: boolean },
   // }
 };
 
-export const deleteParent = async (state:{success:boolean;error:boolean},id:{id:string}) => {
+export const deleteParent = async (
+  state: { success: boolean; error: boolean },
+  id: { id: string }
+) => {
   try {
     const parent = await prisma.parent.findUnique({
-      where: {id:id.id}
+      where: { id: id.id },
     });
- 
+
     if (!parent) {
       console.log("No parent found with ID:", id);
       return { success: false, error: "No parent found with this ID" };
     }
 
     // Delete related records first
-  const updateStudetTable= await prisma.student.updateMany({
+    const updateStudetTable = await prisma.student.updateMany({
       where: { parentId: id.id },
       data: { parentId: null },
     });
-console.log("updata studet table",updateStudetTable)
+    console.log("updata studet table", updateStudetTable);
     // Delete parent from database
     await prisma.parent.delete({
-      where: { id },
+      where: { id: id.id },
     });
 
     // // Try to delete from Clerk, but don't fail if it doesn't work
@@ -603,7 +597,7 @@ console.log("updata studet table",updateStudetTable)
     // }
     // revalidatePath("/list/parents");
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error deleting parent:", error);
     return { success: false, error: error.message };
   }
@@ -612,7 +606,7 @@ console.log("updata studet table",updateStudetTable)
 export const createExam = async (
   state: { success: boolean; error: boolean },
   formData: ExamFormData,
-  data: ExamFormData
+
 ) => {
   try {
     await prisma.exam.create({
@@ -661,13 +655,13 @@ export const updateExam = async (
 
 export const deleteExam = async (
   state: { success: boolean; error: boolean },
-  formData: { id: string }
+  id: { id: string }
 ) => {
   try {
     // Delete exam
     await prisma.exam.delete({
       where: {
-        id: parseInt(formData.id),
+        id: parseInt(id.id),
       },
     });
 

@@ -12,7 +12,7 @@ const EventForm = ({ type, data }: EventFormProps) => {
     defaultValues: data,
   });
 
-  const onSubmit = async (formData: any) => {
+  const onSubmit = async (formData: never) => {
     try {
       const response = await fetch(`/api/events${type === "update" ? `/${data?.id}` : ""}`, {
         method: type === "create" ? "POST" : "PUT",

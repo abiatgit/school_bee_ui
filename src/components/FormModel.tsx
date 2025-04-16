@@ -7,7 +7,6 @@ import { deleteClass, deleteSubject, deleteTeacher,deleteStudent,deleteParent, d
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { FormModelProps } from "./FormContainer";
-// import TeacherForm from "./forms/TeacherForm";
 
 const deleteActionMap = {
   subject: deleteSubject,
@@ -68,13 +67,13 @@ const ParentForm = dynamic(() => import("./forms/ParentForm"), {
 const forms: {
   [key: string]: (
     type: "create" | "update",
-    relatedData?: any,
-    data?: any,
+    relatedData?: never ,
+    data?: never,
     setOpen?: (state: boolean) => void
   ) => React.ReactElement;
 } = {
   teacher: (type, relatedData, data, setOpen) => (
-    <TeacherForm type={type}   relatedData={relatedData} data={data} setOpen={setOpen!} />
+    <TeacherForm type={type}relatedData={relatedData} data={data} setOpen={setOpen!} />
   ),
   student: (type, relatedData, data,setOpen) => 
     (<StudentForm type={type} data={data} relatedData={ relatedData} setOpen={setOpen!}/>),
@@ -118,7 +117,7 @@ const FormModel = ({
   data,
   id,
   relatedData,
-}: FormModelProps & { relatedData: any }) => {
+}: FormModelProps & { relatedData: unknown }) => {
 
   const size = type === "create" ? "w-8 h-8" : "w-7 h-7";
   const bgColor =
@@ -151,7 +150,7 @@ const FormModel = ({
       if (state.error) {
         toast.error(`Failed to delete ${table}.`, { toastId: "error" });
       }
-    }, [state.success, state.error]);
+    }, [state.success, state.error,router]);
 
     return type === "delete" && id ? (
       <form

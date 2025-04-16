@@ -44,7 +44,7 @@ const ClassesListPage = async ({
     ? [...baseColumns, { headers: "Actions", accessor: "actions" }]
     : baseColumns;
 
-  const classRow = (item: any) => {
+  const classRow = (item:ClassType) => {
     return (
       <tr
         key={item.id}

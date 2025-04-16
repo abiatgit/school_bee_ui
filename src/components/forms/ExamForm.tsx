@@ -9,6 +9,7 @@ import { useActionState, useEffect } from "react";
 import { createExam, updateExam } from "@/lib/serverAction";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Lesson } from "@prisma/client";
 
 export const Examschema = z.object({
   id:number(),
@@ -39,7 +40,7 @@ export default function ExamForm({
   type: "create" | "update";
   data?: Partial<ExamFormData>;
   setOpen: (open: boolean) => void;
-  relatedData: any;
+  relatedData: never;
 }) {
   const router = useRouter();
 
@@ -51,7 +52,7 @@ export default function ExamForm({
     resolver: zodResolver(Examschema),
     defaultValues: data,
   });
-  const { lessons } = relatedData;
+  // const { lessons } = relatedData;
 
 
   const [state, formAction] = useActionState(
@@ -75,7 +76,7 @@ export default function ExamForm({
     if (state.error) {
       toast.error("Failed to update student.", { toastId: "error" });
     }
-  }, [state.success, state.error]);
+  }, [state.success, state.error, setOpen, router, type]);
 
   const onSubmit = handleSubmit((data) => {
     formAction(data);
@@ -122,13 +123,12 @@ export default function ExamForm({
             defaultValue={data?.id?.toString()}
             register={register}
             error={errors}
-    
-            hidden
-          />
+
+            hidden type={""} placeholder={""}          />
         )}
         <select {...register("lessonId")} className="border rounded-md p-2">
           <option value="">Select a Lesson</option>
-          {relatedData?.lessons?.map((lesson:any) => (
+          {relatedData?.lessons?.map((lesson:Lesson) => (
             <option key={lesson.id} value={lesson.id}>
               {lesson.name}
             </option>

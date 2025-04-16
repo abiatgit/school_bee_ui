@@ -3,25 +3,24 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import Image from "next/image";
 import React from "react";
-import FormModel from "@/components/FormModel";
 import { Announcement, Class, Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { PAGE_NUMBER, PAGE_SIZE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
-
-
+import FormContainer from "@/components/FormContainer";
 
 type AnnouncementType = Announcement & {
   class: Class;
 };
 
-const AnnouncementsListPage = async ({
+export default async function AnnouncementsPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) => {
-  const { sessionClaims ,userId} = await auth();
-const role = (sessionClaims?.metadata as { role: string })?.role;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const { sessionClaims, userId } = await auth();
+  const role = (sessionClaims?.metadata as { role: string })?.role;
+  const resolvedSearchParams = await searchParams;
 
   const baseColumns = [
     {
@@ -62,8 +61,8 @@ const role = (sessionClaims?.metadata as { role: string })?.role;
           <div className="flex items-center gap-2">
             {role === "admin" && (
               <>
-                <FormModel table="announcement" type="update" data={item} />
-                <FormModel table="announcement" type="delete" data={item} id={item.id.toString()} />
+                <FormContainer table="announcement" type="update" data={item} />
+                <FormContainer table="announcement" type="delete" data={item} id={item.id.toString()} />
               </>
             )}
           </div>
@@ -71,7 +70,7 @@ const role = (sessionClaims?.metadata as { role: string })?.role;
       </tr>
     );
   };
-  const { page, ...queryParams } = await searchParams;
+  const { page, ...queryParams } = resolvedSearchParams;
 
   const p = page ? parseInt(page as string) : 1;
   // URL PARAM CONVERSION
@@ -133,7 +132,7 @@ const role = (sessionClaims?.metadata as { role: string })?.role;
                 <Image src="/sort.png" alt="add" width={14} height={14} />
               </button>
               {role === "admin" && (
-                <FormModel table="announcement" type="create" />
+                <FormContainer table="announcement" type="create" />
               )}
             </div>
           </div>
@@ -149,4 +148,3 @@ const role = (sessionClaims?.metadata as { role: string })?.role;
     );
   }
 };
-export default AnnouncementsListPage;

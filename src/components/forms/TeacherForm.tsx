@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputField from "../InputField";
 import Image from "next/image";
-import { Dispatch, SetStateAction, startTransition, useActionState, useEffect, useState } from "react";
+import { startTransition, useActionState, useEffect, useState } from "react";
 import { createTeacher, updateTeacher } from "@/lib/serverAction";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -52,12 +52,11 @@ export default function TeacherForm({
   type,
   data,
   setOpen,
-  relatedData
 }: {
   type: "create" | "update";
   data?: Partial<TeacherFormData>;
-  setOpen: Dispatch<SetStateAction<boolean>>;
-  relatedData?:any
+  setOpen: (open: boolean) => void;
+  relatedData?:never
 }) {
 
   const {
@@ -80,14 +79,14 @@ export default function TeacherForm({
     }
   });
 
-const [img,setImg]=useState<any>()
+const [img,setImg]=useState<never>()
   const router = useRouter();
-  const [state, formAction, pending] = useActionState(
+  const [state, formAction,] = useActionState(
     (state: { success: boolean; error: boolean }, formData: TeacherFormData) => 
       type === "create" ? createTeacher(state, formData) : updateTeacher(state, formData),
     initialState
   );
-const {subjects}=relatedData
+// const {subjects}=relatedData
 
   useEffect(() => {
     if (state.success) {
@@ -101,7 +100,7 @@ const {subjects}=relatedData
     if (state.error) {
       toast.error("Failed to create subject.", { toastId: "error" });
     }
-  }, [state.success, state.error]);
+  }, [state.success, state.error, setOpen, router, type]);
 
   const onSubmit = (formData: TeacherFormData) => {
     console.log('Form submitted with data:', formData);

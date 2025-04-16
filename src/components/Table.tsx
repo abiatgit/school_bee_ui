@@ -7,9 +7,9 @@ const Table = ({
   data,
 }: {
   columns: { headers: string; accessor: string; className?: string }[];
-  renderRow: (item: any) => React.ReactElement;
-  renderActions?: (item: any) => React.ReactNode;
-  data: any[];
+  renderRow: (item: never) => React.ReactElement;
+  renderActions?: (item: never) => React.ReactNode;
+  data: never[];
 }) => {
   return (
     <table className="w-full mt-4">

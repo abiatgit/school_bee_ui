@@ -3,7 +3,7 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import Image from "next/image";
 import React from "react";
-import FormModel from "@/components/FormModel";
+// import FormModel from "@/components/FormModel";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { Class, Prisma, Student } from "@prisma/client";

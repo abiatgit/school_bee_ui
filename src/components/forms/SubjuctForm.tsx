@@ -8,7 +8,6 @@ import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { Teacher } from "@prisma/client";
-import { CldUploadWidget } from 'next-cloudinary';
 
 export const subjectSchema = z.object({
   id: z.coerce.number().optional(),
@@ -68,7 +67,7 @@ export default function SubjectForm({
     if (state.error) {
       toast.error("Failed to create subject.", { toastId: "error" });
     }
-  }, [state.success, state.error]);
+  }, [state.success, state.error, setOpen, router, type]);
 
   const onSubmit = (formData: SubjectFormData) => {
     startTransition(() => {
